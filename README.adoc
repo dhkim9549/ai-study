@@ -1,0 +1,4 @@
+=== Grokking Deep Learning ===
+An easy introductory book on AI.
+
+After reading up to Chapter 6, you can create a basic neural network Python program from scratch.
