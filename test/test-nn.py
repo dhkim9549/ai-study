@@ -26,7 +26,6 @@ def reluDiff(x):
 
 A = rng.random((2, 5)) * 2 - 1
 B = rng.random((5, 1)) * 2 - 1
-B = B
 alpha = 0.01
 
 
