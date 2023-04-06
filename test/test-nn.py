@@ -42,11 +42,14 @@ for i in range(10000):
         x = X[n]
         y = Y[n]
 
+        # infer
         h = relu(x @ A)
         output = h @ B
 
+        # calculate error
         error += (output - y) ** 2
 
+        # backpropagation
         B_delta = output - y
         B -= alpha * B_delta * np.array([h]).T
 
