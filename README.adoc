@@ -2,3 +2,5 @@
 An easy introductory book on AI.
 
 After reading up to Chapter 6, you can create a basic neural network Python program from scratch using only numpy.
+
+* https://github.com/dhkim9549/ai-study/tree/main/test[Building a simple NN using only numpy]
