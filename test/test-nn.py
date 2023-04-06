@@ -52,8 +52,8 @@ for i in range(10000):
         B_delta = output - y
         B -= alpha * B_delta * np.array([h]).T
 
-        A_delta = B_delta * np.array([reluDiff(x)]).T * B.T
-        A -= alpha * A_delta
+        A_delta = B_delta * h * B.T
+        A -= alpha * (np.array([x]).T @ A_delta)
 
     if(i % 1000 == 1):
         print(f'error = {error}')
