@@ -21,12 +21,12 @@ print(f'Y = {Y}')
 def relu(x):
     return (x > 0) * x
 
-def reluDiff(x):
+def diffRelu(x):
     return x > 0
 
 A = rng.random((2, 5)) * 2 - 1
 B = rng.random((5, 1)) * 2 - 1
-alpha = 0.01
+alpha = 0.1
 
 
 # train NN
@@ -52,7 +52,7 @@ for i in range(10000):
         B_delta = output - y
         B -= alpha * B_delta * np.array([h]).T
 
-        A_delta = B_delta * h * B.T
+        A_delta = B_delta * diffRelu(h) * B.T
         A -= alpha * (np.array([x]).T @ A_delta)
 
     if(i % 1000 == 1):
