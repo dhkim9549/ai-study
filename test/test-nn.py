@@ -30,16 +30,16 @@ alpha = 0.1
 
 
 # train NN
-for i in range(10000):
+for i in range(100):
 
     error = 0
 
-    if(i % 1000 == 1):
+    if(i % 10 == 1):
         print(f'i = {i}')
 
     for n in range(len(X)):
-        x = X[n]
-        y = Y[n]
+        x = np.array([X[n]])
+        y = np.array([Y[n]])
 
         # infer
         h = relu(x @ A)
@@ -50,21 +50,16 @@ for i in range(10000):
 
         # backpropagation
         B_delta = output - y
-        B -= alpha * B_delta * np.array([h]).T
+        B -= alpha * B_delta * h.T
 
         A_delta = B_delta * diffRelu(h) * B.T
-        A -= alpha * (np.array([x]).T @ A_delta)
+        A -= alpha * x.T @ A_delta
 
-    if(i % 1000 == 1):
+    if(i % 10 == 1):
+        print(f'x = {x}')
+        print(f'h = {h}')
+        print(f'y = {y}')
+        print(f'A = {A}')
+        print(f'B = {B}')
         print(f'error = {error}')
-
-print(f'X = {X}')
-print(f'Y = {Y}')
-
-h = relu(X @ A)
-y = relu(h @ B)
-print(f'y = {y}')
-
-print(f'A = {A}')
-print(f'B = {B}')
 
