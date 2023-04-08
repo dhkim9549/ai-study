@@ -57,10 +57,11 @@ for i in range(10000):
         A -= alpha * x.T @ A_delta
 
     if(i % 1000 == 1):
+        print(f'error = {error}')
         print(f'x = {x}')
         print(f'h = {h}')
         print(f'y = {y}')
         print(f'A = {A}')
         print(f'B = {B}')
-        print(f'error = {error}')
-
+        print(f'B_delta = {B_delta}')
+        print(f'A_delta = {A_delta}')
