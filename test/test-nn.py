@@ -24,9 +24,11 @@ def relu(x):
 def diffRelu(x):
     return x > 0
 
-A = rng.random((2, 5)) * 2 - 1
-B = rng.random((5, 1)) * 2 - 1
-alpha = 0.01
+A = np.random.normal(0, 1, (2, 50)) * 2 - 1
+A0 = np.array(A)
+B = np.random.normal(0, 1, (50, 1)) * 2 - 1
+B0 = np.array(B)
+alpha = 0.001
 
 
 # train NN
@@ -53,15 +55,23 @@ for i in range(10000):
         B_delta = output - y
         B -= alpha * h.T @ B_delta
 
-        A_delta = B_delta * diffRelu(x @ A) * B.T
+        A_delta = B_delta * B.T * diffRelu(x @ A)
         A -= alpha * x.T @ A_delta
 
-    if(i % 1000 == 1):
-        print(f'error = {error}')
-        print(f'x = {x}')
-        print(f'h = {h}')
-        print(f'y = {y}')
-        print(f'A = {A}')
-        print(f'B = {B}')
-        print(f'B_delta = {B_delta}')
-        print(f'A_delta = {A_delta}')
+        if(i % 1000 == 1):
+            print()
+            print(f'x = {x}')
+            print(f'h = {h}')
+            print(f'y = {y}')
+            print(f'output = {output}')
+            print(f'A = {A}')
+            print(f'B = {B}')
+            print(f'B_delta = {B_delta}')
+            print(f'A_delta = {A_delta}')
+            print(f'error = {error}')
+
+print(f'A0 = {A0}')
+print(f'B0 = {B0}')
+
+
+
