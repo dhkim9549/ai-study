@@ -24,9 +24,9 @@ def relu(x):
 def diffRelu(x):
     return x > 0
 
-A = np.random.normal(0, 1, (2, 50)) * 2 - 1
+A = np.random.normal(0, 1, (2, 50))
 A0 = np.array(A)
-B = np.random.normal(0, 1, (50, 1)) * 2 - 1
+B = np.random.normal(0, 1, (50, 1))
 B0 = np.array(B)
 alpha = 0.001
 
