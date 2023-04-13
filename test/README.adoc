@@ -3,49 +3,9 @@
 * predicts xor operations
 
 
-=== Result ===
+==== Result ====
 ----
 # python3.10 test-nn.py
-X = [[1. 1.]
- [1. 0.]
- [1. 0.]
- [0. 0.]
- [1. 1.]
- [0. 1.]
- [0. 0.]
- [0. 0.]
- [0. 1.]
- [0. 1.]
- [1. 1.]
- [0. 0.]
- [1. 0.]
- [0. 0.]
- [1. 1.]
- [0. 0.]
- [0. 0.]
- [1. 0.]
- [1. 0.]
- [1. 1.]]
-Y = [[0.]
- [1.]
- [1.]
- [0.]
- [0.]
- [1.]
- [0.]
- [0.]
- [1.]
- [1.]
- [0.]
- [0.]
- [1.]
- [0.]
- [0.]
- [0.]
- [0.]
- [1.]
- [1.]
- [0.]]
 
 i = 1
 x = [[1. 1.]]
@@ -92,3 +52,66 @@ error = [[1.61124792e-28]]
 
 
 ----
+
+== A very simple nueral network using pytorch backward function ==
+* uses pytorch backward function to compute the gradient of weights
+* updates weights manually using the gradients
+* predicts xor operations
+
+
+==== Result ====
+----
+# python3 basic-nn-torch.py
+
+i = 0
+error = tensor([0.8932], dtype=torch.float64, grad_fn=<PowBackward0>)
+B = tensor([[ 1.5359],
+        [-1.4768],
+        [-0.7959],
+        [ 0.9203],
+        [-0.1051],
+        [-0.1967],
+        [-0.2857],
+        [-0.4806],
+        [ 0.9489],
+        [-0.8939]], dtype=torch.float64, requires_grad=True)
+A = tensor([[ 0.4273,  1.9875, -1.1466, -0.5465, -0.1829, -0.7146,  1.0741, -1.0435,
+         -0.7468,  1.1360],
+        [ 0.2434, -0.9609, -1.8127,  2.1923, -0.9406, -0.6608, -0.4683, -0.4235,
+         -1.3422,  0.5185]], dtype=torch.float64, requires_grad=True)
+
+i = 100
+error = tensor([0.0004], dtype=torch.float64, grad_fn=<PowBackward0>)
+B = tensor([[ 1.9211],
+        [-0.4611],
+        [-0.7959],
+        [ 0.7235],
+        [-0.1051],
+        [-0.1967],
+        [ 0.3347],
+        [-0.4806],
+        [ 0.9489],
+        [-0.6879]], dtype=torch.float64, requires_grad=True)
+A = tensor([[ 1.0182,  1.5776, -1.1466, -0.8516, -0.1829, -0.7146,  1.0414, -1.0435,
+         -0.7468,  0.8660],
+        [-0.7391, -0.6418, -1.8127,  2.0136, -0.9406, -0.6608, -0.5620, -0.4235,
+         -1.3422,  0.6938]], dtype=torch.float64, requires_grad=True)
+
+i = 200
+error = tensor([1.2076e-07], dtype=torch.float64, grad_fn=<PowBackward0>)
+B = tensor([[ 1.9285],
+        [-0.4554],
+        [-0.7959],
+        [ 0.7335],
+        [-0.1051],
+        [-0.1967],
+        [ 0.3400],
+        [-0.4806],
+        [ 0.9489],
+        [-0.6884]], dtype=torch.float64, requires_grad=True)
+A = tensor([[ 1.0167,  1.5780, -1.1466, -0.8596, -0.1829, -0.7146,  1.0412, -1.0435,
+         -0.7468,  0.8666],
+        [-0.7601, -0.6368, -1.8127,  2.0138, -0.9406, -0.6608, -0.5657, -0.4235,
+         -1.3422,  0.6936]], dtype=torch.float64, requires_grad=True)
+----
+
