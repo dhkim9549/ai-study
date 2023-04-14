@@ -29,7 +29,7 @@ alpha = 0.01
 print(f'A = {A}')
 print(f'B = {B}')
 
-for i in range(10):
+for i in range(100):
 
     error = 0
 
@@ -43,10 +43,22 @@ for i in range(10):
 
         error += (output - y) ** 2
 
-        B -= alpha * (output - y) * h.T 
-        A -= alpha * (output - y) * B.T * diffRelu(x @ A) * x.T 
+        # backpropagation
+        dy = output - y
+       
+        dh = dy @ B.T
+        dB = h.T @ dy
+        B -= alpha * dB
 
-    if(i % 1 == 0):
+        dr = dh * diffRelu(x @ A)
+
+        dA = x.T @ dr
+        A -= alpha * dA
+
+        #B -= alpha * (output - y) * h.T 
+        #A -= alpha * (output - y) * B.T * diffRelu(x @ A) * x.T 
+
+    if(i % 10 == 0):
         print()
         print(f'i = {i}')
         print(f'error = {error}')
