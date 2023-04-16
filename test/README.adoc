@@ -1,5 +1,5 @@
 == A very simple nueral network ==
-* https://github.com/dhkim9549/ai-study/blob/main/test/test-nn.py[test-nn.py]
+* https://github.com/dhkim9549/ai-study/blob/main/test/simple-nn.py[simple-nn.py]
 * uses only numpy
 * predicts xor operations
 
