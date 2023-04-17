@@ -1,4 +1,4 @@
-  Deep Learning is full of life lessons.
+  Machine Learning is full of life lessons.
 
 === Reference ===
 
