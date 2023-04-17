@@ -99,7 +99,7 @@ L2 = [[3.67494533e-08]
 ----
 
 == A very simple nueral network using pytorch backward function ==
-* https://github.com/dhkim9549/ai-study/blob/main/test/autograd.py[autograd.py]
+* https://github.com/dhkim9549/ai-study/blob/main/test/basic-nn-torch.py[basic-nn-torch.py]
 * uses pytorch backward function to compute the gradient of weights
 * updates weights manually using the gradients
 * predicts xor operations
