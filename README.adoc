@@ -12,7 +12,7 @@
 
   An easy introductory book on AI.
 
-* https://cs231n.github.io/optimization-2/[Stanford CS231 class on backpropagation]
+* https://cs231n.github.io/optimization-2/[Stanford CS231n class on backpropagation]
 
   Backpropagation is a core of neural networks.
 
