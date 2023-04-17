@@ -6,7 +6,7 @@
 
 * https://numpy.org/[NumPy]
 
-  A fundamental python package for scientific computing
+  A fundamental python package for scientific computing.
 
 * https://www.manning.com/books/grokking-deep-learning[Grokking Deep Learning]
 
