@@ -1,13 +1,13 @@
 === Reference ===
 
 ==== https://www.python.org/[Python] ====
-A programming language which simplifies a machine learning.
+A programming language which simplifies a machine learning
 
 ==== https://numpy.org/[NumPy] ====
-A fundamental python package for scientific computing.
+A fundamental python package for scientific computing
 
 ==== https://www.manning.com/books/grokking-deep-learning[Grokking Deep Learning] ====
-An easy introductory book on AI.
+An easy introductory book on AI
 
 ==== https://cs231n.github.io/optimization-2/[Stanford CS231n class on backpropagation] ====
 Backpropagation is a core of neural networks.
