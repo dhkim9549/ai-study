@@ -6,28 +6,26 @@ def relu(x):
 def dRelu(output):
     return output>0
 
-streetlights = np.array( [[ 1, 0, 1 ],
-                          [ 0, 1, 1 ],
-                          [ 0, 0, 1 ],
-                          [ 1, 1, 1 ] ] )
+X = np.random.randint(0, 2, size=(20, 2)).astype(float)
+print(f'X = {X}')
 
-walk_vs_stop = np.array([[ 1, 1, 0, 0]]).T
+Y = np.logical_xor(X[:,0], X[:,1]).astype(float)
+Y = np.array([Y]).T 
+print(f'Y = {Y}')
 
 alpha = 0.002
 
-hidden_size = 40
+hidden_size = 20
 
-W01 = np.random.normal(0, 1, (3,hidden_size))
-W12 = np.random.normal(0, 1, (hidden_size,1))
-
-print(f'streetlights = {streetlights}')
+W01 = np.random.normal(0, 1, (2, hidden_size))
+W12 = np.random.normal(0, 1, (hidden_size, 1))
 
 for i in range(1000):
 
-    j = i % len(streetlights)
+    j = i % len(X)
 
-    #x = streetlights[j:j+1]
-    x = streetlights
+    #x = X[j:j+1]
+    x = X 
 
     # infer
     L1a = x @ W01
@@ -36,13 +34,15 @@ for i in range(1000):
 
     L2 = L1 @ W12
 
-    #y0 = walk_vs_stop[j]
-    y0 = walk_vs_stop
+    #y0 = Y[j]
+    y0 = Y 
 
     d = L2 - y0
 
     error = sum(d ** 2)
     if(i % 100 == 0):
+        print()
+        print(f'i = {i}')
         print(f'error = {error}')
         print(f'L2 = {L2}')
 
