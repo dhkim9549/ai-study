@@ -12,6 +12,9 @@ An easy introductory book on AI.
 ==== https://cs231n.github.io/optimization-2/[Stanford CS231n class on backpropagation] ====
 Backpropagation is a core of neural networks.
 
+==== https://pytorch.org/[PyTorch] ====
+A machine learning framework
+
 ==== https://d2l.ai/index.html[Dive into Deep Learning] ====
 A deep learning book with code, math, and discussions. Implemented with PyTorch, NumPy/MXNet, JAX, and TensorFlow.
 
