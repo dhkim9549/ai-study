@@ -12,8 +12,8 @@ class NeuralNetwork(nn.Module):
         )
 
     def forward(self, x):
-        logits = self.linear_relu_stack(x)
-        return logits
+        y = self.linear_relu_stack(x)
+        return y 
 
 model = NeuralNetwork()
 print(f'model = {model}')
