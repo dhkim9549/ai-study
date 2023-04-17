@@ -162,7 +162,7 @@ A = tensor([[ 1.0167,  1.5780, -1.1466, -0.8596, -0.1829, -0.7146,  1.0412, -1.0
 ----
 
 == A very simple nueral network using PyTorch Module ==
-* https://github.com/dhkim9549/ai-study/blob/main/test/basic-nn-torch.py[troch-nn.py]
+* https://github.com/dhkim9549/ai-study/blob/main/test/torch-nn.py[troch-nn.py]
 * predicts xor operations
 
 
