@@ -1,12 +1,12 @@
 === Reference ===
 
-* https://www.python.org/[Python programming language]
+* https://www.python.org/[Python]
 
 A programming language which simplifies a machine learning.
 
-* https://numpy.org/[NumPy Python package]
+* https://numpy.org/[NumPy]
 
-The fundamental package for scientific computing
+A fundamental python package for scientific computing
 
 * https://www.manning.com/books/grokking-deep-learning[Grokking Deep Learning]
 
