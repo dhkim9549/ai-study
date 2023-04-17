@@ -1,4 +1,13 @@
 === Reference ===
+
+* https://www.python.org/[Python programming language]
+
+A programming language which simplifies a machine learning.
+
+* https://numpy.org/[NumPy Python package]
+
+The fundamental package for scientific computing
+
 * https://www.manning.com/books/grokking-deep-learning[Grokking Deep Learning]
 
 An easy introductory book on AI.
@@ -6,6 +15,8 @@ An easy introductory book on AI.
 * https://d2l.ai/index.html[Dive into Deep Learning]
 
 A deep learning book with code, math, and discussions. Implemented with PyTorch, NumPy/MXNet, JAX, and TensorFlow.
+
+
 
 === Study ===
 
