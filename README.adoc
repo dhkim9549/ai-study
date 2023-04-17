@@ -1,3 +1,5 @@
+  Deep Learning is full of life lessons.
+
 === Reference ===
 
 ==== https://www.python.org/[Python] ====
