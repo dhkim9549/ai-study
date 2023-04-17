@@ -2,19 +2,23 @@
 
 * https://www.python.org/[Python]
 
-A programming language which simplifies a machine learning.
+  A programming language which simplifies a machine learning.
 
 * https://numpy.org/[NumPy]
 
-A fundamental python package for scientific computing
+  A fundamental python package for scientific computing
 
 * https://www.manning.com/books/grokking-deep-learning[Grokking Deep Learning]
 
-An easy introductory book on AI.
+  An easy introductory book on AI.
+
+* https://cs231n.github.io/optimization-2/[Stanford CS231 class on backpropagation]
+
+  Backpropagation is a core of neural networks.
 
 * https://d2l.ai/index.html[Dive into Deep Learning]
 
-A deep learning book with code, math, and discussions. Implemented with PyTorch, NumPy/MXNet, JAX, and TensorFlow.
+  A deep learning book with code, math, and discussions. Implemented with PyTorch, NumPy/MXNet, JAX, and TensorFlow.
 
 
 
