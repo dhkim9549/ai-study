@@ -1,6 +1,27 @@
-=== Grokking Deep Learning ===
-An easy introductory book on AI.
+=== Reference ===
 
-After reading up to Chapter 6, you can create a basic neural network Python program from scratch using only numpy.
+* https://www.python.org/[Python]
 
-* https://github.com/dhkim9549/ai-study/tree/main/test[Building a simple NN using only numpy]
+  A programming language which simplifies a machine learning.
+
+* https://numpy.org/[NumPy]
+
+  A fundamental python package for scientific computing.
+
+* https://www.manning.com/books/grokking-deep-learning[Grokking Deep Learning]
+
+  An easy introductory book on AI.
+
+* https://cs231n.github.io/optimization-2/[Stanford CS231n class on backpropagation]
+
+  Backpropagation is a core of neural networks.
+
+* https://d2l.ai/index.html[Dive into Deep Learning]
+
+  A deep learning book with code, math, and discussions. Implemented with PyTorch, NumPy/MXNet, JAX, and TensorFlow.
+
+
+
+=== Study ===
+
+* https://github.com/dhkim9549/ai-study/tree/main/test[Building a simple NN using numpy]
