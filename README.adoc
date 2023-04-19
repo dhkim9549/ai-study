@@ -24,3 +24,5 @@ A deep learning book with code, math, and discussions. Implemented with PyTorch,
 
 === Study ===
 https://github.com/dhkim9549/ai-study/tree/main/test[Building a simple NN using numpy]
+
+https://github.com/dhkim9549/ai-study/tree/main/imdb[IMDB review sentiment classification]
