@@ -29,13 +29,10 @@ for x in f:
 
 print(f'vocaLst = {vocaLst}')
 
-def compare(item1, item2):
-    return item1[1] - item2[1]
-
 sortedLst = sorted(vocaLst, key=lambda x: x[1])
 print(f'sortedLst = {sortedLst}')
 
-for i in range(100000):
+for i in range(40):
     print(sortedLst[i])
 
 
