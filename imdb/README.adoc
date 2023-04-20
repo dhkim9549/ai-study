@@ -50,6 +50,8 @@ crctRat = 0.817
 crctRat = 0.82
 ----
 
+* As the length of the input vector increases, the training speed slows down significantly. When the lenth of the input vector was larger than 10000, the training was too slow.
+
 ==== Method 2 ====
 
 Build a nn using PyTorch
