@@ -57,3 +57,75 @@ crctRat = 0.82
 Build a nn using PyTorch
 
 * Will this be faster than pure numpy?
+
+Indeed, the python program with PyTorch acheives near perfrect result with much faster training!
+
+----
+# nohup python3 -u train-review-torch.py > train-review-torch.log &
+
+cnt = 0
+crctRat = 0.0
+loss = 0.28654032945632935
+y = tensor([[0.5353, 0.4647]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/train/neg/12237_2.txt
+
+cnt = 1000
+crctRat = 0.544
+loss = 0.1975749433040619
+y = tensor([[0.4445, 0.5555]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/train/neg/12085_3.txt
+
+cnt = 2000
+crctRat = 0.647
+loss = 0.2767987847328186
+y = tensor([[0.4739, 0.5261]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[1., 0.]])
+reviewFile = /root/data/aclImdb/train/pos/11121_10.txt
+
+cnt = 3000
+crctRat = 0.751
+loss = 0.1967540979385376
+y = tensor([[0.4436, 0.5564]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/train/neg/7855_1.txt
+
+...
+
+cnt = 629000
+crctRat = 0.986
+loss = 7.372010441031307e-05
+y = tensor([[0.0086, 0.9914]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/train/neg/2599_4.txt
+
+cnt = 630000
+crctRat = 0.985
+loss = 1.3236262930149678e-07
+y = tensor([[3.6381e-04, 9.9964e-01]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/train/neg/3354_2.txt
+
+cnt = 631000
+crctRat = 0.981
+loss = 0.0012777902884408832
+y = tensor([[0.0357, 0.9643]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/train/neg/10299_4.txt
+
+cnt = 632000
+crctRat = 0.981
+loss = 2.4416371502411494e-07
+y = tensor([[4.9414e-04, 9.9951e-01]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/train/neg/1242_1.txt
+
+cnt = 633000
+crctRat = 0.991
+loss = 7.489006748073734e-09
+y = tensor([[8.6532e-05, 9.9991e-01]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/train/neg/5538_4.txt
+
+----
