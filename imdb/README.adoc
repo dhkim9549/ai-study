@@ -35,17 +35,9 @@ crctRat = 0.557
 crctRat = 0.558
 crctRat = 0.55
 crctRat = 0.585
-crctRat = 0.599
-crctRat = 0.574
-crctRat = 0.568
-crctRat = 0.579
 
 ...
 
-crctRat = 0.815
-crctRat = 0.829
-crctRat = 0.815
-crctRat = 0.816
 crctRat = 0.814
 crctRat = 0.794
 crctRat = 0.83
@@ -57,3 +49,9 @@ crctRat = 0.796
 crctRat = 0.817
 crctRat = 0.82
 ----
+
+==== Method 2 ====
+
+Build a nn using PyTorch
+
+* Will this be faster than pure numpy?
