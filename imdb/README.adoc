@@ -1,7 +1,15 @@
 == IMDB review pos/neg prediction ==
 
-=== Reference ===
+==== Reference ====
 https://livebook.manning.com/book/grokking-deep-learning/chapter-11/[Grokking Deep Learning: Chapter 11. Neural networks that understand language]
 
-=== Data set ===
+==== Data set ====
 http://ai.stanford.edu/~amaas/data/sentiment/[Large Movie Review Dataset]
+
+==== Method ====
+
+Build a simple nn using numpy
+
+Make a list of vocabulary from the data set
+
+Train
