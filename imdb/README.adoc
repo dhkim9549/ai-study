@@ -24,6 +24,24 @@ Result
 * 80% acuuracy achieved
 
 ----
+# python3 train-review.py
+crctRat = 0.0
+crctRat = 0.521
+crctRat = 0.554
+crctRat = 0.586
+crctRat = 0.555
+crctRat = 0.588
+crctRat = 0.557
+crctRat = 0.558
+crctRat = 0.55
+crctRat = 0.585
+crctRat = 0.599
+crctRat = 0.574
+crctRat = 0.568
+crctRat = 0.579
+
+...
+
 crctRat = 0.815
 crctRat = 0.829
 crctRat = 0.815
