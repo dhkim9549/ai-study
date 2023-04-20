@@ -58,7 +58,7 @@ Build a nn using PyTorch
 
 * Will this be faster than pure numpy?
 
-Indeed, the python program with PyTorch acheives near perfrect result with much faster training!
+Indeed, the python program using PyTorch acheives near perfrect result with much faster training!
 
 ----
 # nohup python3 -u train-review-torch.py > train-review-torch.log &
