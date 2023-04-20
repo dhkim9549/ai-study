@@ -7,6 +7,7 @@ https://livebook.manning.com/book/grokking-deep-learning/chapter-11/[Grokking De
 http://ai.stanford.edu/~amaas/data/sentiment/[Large Movie Review Dataset]
 
 ==== Method ====
+https://github.com/dhkim9549/ai-study/blob/main/imdb/train-review.py[train-review.py]
 
 Build a simple nn using numpy
 
