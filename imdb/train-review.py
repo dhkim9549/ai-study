@@ -1,3 +1,7 @@
+##################################################
+# IMDB review pos/neg prediction
+##################################################
+
 from os import listdir
 from os.path import isfile, join
 import numpy as np
@@ -8,11 +12,11 @@ i = 0
 voca = {} 
 voca2 = {}
 for x in f:
-    i += 1
     token = x.split("\n")[0]
     voca[token] = i
     voca2[i] = token
-    if i > 1000:
+    i += 1
+    if(i >= 10000):
         break
 
 # nn
@@ -29,22 +33,33 @@ def softmax(x):
 alpha = 0.002
 hidden_size = 100 
 
-W01 = np.random.normal(0, 1, (1000, hidden_size))
+W01 = np.random.normal(0, 1, (len(voca), hidden_size))
 W12 = np.random.normal(0, 1, (hidden_size, 2))
 
 # train
-mypath = '/root/data/aclImdb/train/pos'
-onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+fileLst = []
 
-for cnt in range(40):
-    reviewFile = onlyfiles[0]
+pathPos = '/root/data/aclImdb/train/pos'
+filesPos = [f for f in listdir(pathPos) if isfile(join(pathPos, f))]
+for fileNm in filesPos:
+    fileLst.append(pathPos + '/' + fileNm)
 
-    f = open(mypath + '/' + reviewFile, "r")
+pathNeg = '/root/data/aclImdb/train/neg'
+filesNeg = [f for f in listdir(pathNeg) if isfile(join(pathNeg, f))]
+for fileNm in filesNeg:
+    fileLst.append(pathNeg + '/' + fileNm)
+
+crctCnt = 0
+totCnt = 0
+for cnt in range(4000000):
+    reviewFile = fileLst[np.random.randint(len(fileLst))]
+
+    f = open(reviewFile, "r")
     tokenLst = []
     for line in f:
         tokenLst += line.replace(".", "").replace("!", "").lower().split(" ")
 
-    x = np.zeros((1, 1000), dtype=float)
+    x = np.zeros((1, len(voca)), dtype=float)
 
     for token in tokenLst:
         if token in voca:
@@ -53,15 +68,32 @@ for cnt in range(40):
     x = np.minimum(x, 1.0)
 
     y0 = np.array([[1.0, 0.0]])
+    if "neg" in reviewFile:
+        y0 = np.array([[0.0, 1.0]])
 
     # infer
     L1a = x @ W01
     L1 = relu(L1a)
     L2 = softmax(L1 @ W12)
+    y = L2
 
     d = L2 - y0
     error = (d ** 2).sum()
-    print(f'error = {error}')
+
+    # stat
+    totCnt += 1
+    if (y[0, 0] > 0.5 and y0[0, 0] > 0.5) or (y[0, 0] <  0.5 and y0[0, 0] <  0.5):
+        crctCnt += 1
+    crctRat = crctCnt / totCnt 
+    if cnt % 1000 == 0:
+        print()
+        print(f'cnt = {cnt}')
+        print(f'crctRat = {crctRat}')
+        print(f'error = {error}')
+        print(f'y = {y}')
+        print(f'y0 = {y0}')
+        totCnt = 0
+        crctCnt = 0
 
     # backpropagation
     dW12 = L1.T @ d
