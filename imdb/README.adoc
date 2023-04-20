@@ -13,4 +13,6 @@ Build a simple nn using numpy
 
 Make a list of vocabulary from the data set
 
+* Truncated the length of the vocab list 
+
 Train
