@@ -1,0 +1,7 @@
+== IMDB review pos/neg prediction ==
+
+=== Reference ===
+https://livebook.manning.com/book/grokking-deep-learning/chapter-11/[Grokking Deep Learning: Chapter 11. Neural networks that understand language]
+
+=== Data set ===
+http://ai.stanford.edu/~amaas/data/sentiment/[Large Movie Review Dataset]
