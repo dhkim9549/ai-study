@@ -1,0 +1,59 @@
+== IMDB review pos/neg prediction ==
+
+==== Reference ====
+https://livebook.manning.com/book/grokking-deep-learning/chapter-11/[Grokking Deep Learning: Chapter 11. Neural networks that understand language]
+
+==== Data set ====
+http://ai.stanford.edu/~amaas/data/sentiment/[Large Movie Review Dataset]
+
+==== Method ====
+https://github.com/dhkim9549/ai-study/blob/main/imdb/train-review.py[train-review.py]
+
+Build a simple nn using numpy
+
+Make a list of vocabulary from the data set
+
+* Truncated the length of the vocab list 
+
+Train
+
+* Using the vocab list, an input text is encoded into vectors usnig one-hot encoding.
+
+Result
+
+* 80% acuuracy achieved
+
+----
+# python3 train-review.py
+crctRat = 0.0
+crctRat = 0.521
+crctRat = 0.554
+crctRat = 0.586
+crctRat = 0.555
+crctRat = 0.588
+crctRat = 0.557
+crctRat = 0.558
+crctRat = 0.55
+crctRat = 0.585
+
+...
+
+crctRat = 0.814
+crctRat = 0.794
+crctRat = 0.83
+crctRat = 0.809
+crctRat = 0.798
+crctRat = 0.822
+crctRat = 0.828
+crctRat = 0.796
+crctRat = 0.817
+crctRat = 0.82
+----
+
+* As the length of the input vector increases, the training speed slows down significantly. When the lenth of the input vector was larger than 10000, the training was too slow.
+
+==== Method 2 ====
+
+Build a nn using PyTorch
+
+* Will this be faster than pure numpy?
