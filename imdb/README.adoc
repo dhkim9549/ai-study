@@ -13,8 +13,6 @@ Build a simple nn using numpy
 
 Make a list of vocabulary from the data set
 
-* Truncated the length of the vocab list 
-
 Train
 
 * Using the vocab list, an input text is encoded into vectors usnig one-hot encoding.
