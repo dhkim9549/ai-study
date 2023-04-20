@@ -110,7 +110,8 @@ reviewFile = /root/data/aclImdb/train/neg/5538_4.txt
 
 ----
 
-https://github.com/dhkim9549/ai-study/blob/main/imdb/train-review-torch-eval.py[evaluation]
+==== Evaluation ====
+https://github.com/dhkim9549/ai-study/blob/main/imdb/train-review-torch-eval.py[train-review-torch-eval.py]
 
 Using test data set, model evaluation was done.
 It achieved 86% success rate.
