@@ -57,7 +57,7 @@ for fileNm in filesNeg:
 
 crctCnt = 0
 totCnt = 0
-for cnt in range(4000000):
+for cnt in range(40000000000000):
     reviewFile = fileLst[np.random.randint(len(fileLst))]
 
     f = open(reviewFile, "r")
@@ -96,6 +96,7 @@ for cnt in range(4000000):
         print(f'loss = {loss}')
         print(f'y = {y}')
         print(f'y0 = {y0}')
+        print(f'reviewFile = {reviewFile}')
         totCnt = 0
         crctCnt = 0
 
