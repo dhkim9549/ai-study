@@ -32,15 +32,9 @@ crctRat = 0.586
 crctRat = 0.555
 crctRat = 0.588
 crctRat = 0.557
-crctRat = 0.558
-crctRat = 0.55
-crctRat = 0.585
 
 ...
 
-crctRat = 0.814
-crctRat = 0.794
-crctRat = 0.83
 crctRat = 0.809
 crctRat = 0.798
 crctRat = 0.822
@@ -93,20 +87,6 @@ reviewFile = /root/data/aclImdb/train/neg/7855_1.txt
 
 ...
 
-cnt = 629000
-crctRat = 0.986
-loss = 7.372010441031307e-05
-y = tensor([[0.0086, 0.9914]], grad_fn=<SoftmaxBackward0>)
-y0 = tensor([[0., 1.]])
-reviewFile = /root/data/aclImdb/train/neg/2599_4.txt
-
-cnt = 630000
-crctRat = 0.985
-loss = 1.3236262930149678e-07
-y = tensor([[3.6381e-04, 9.9964e-01]], grad_fn=<SoftmaxBackward0>)
-y0 = tensor([[0., 1.]])
-reviewFile = /root/data/aclImdb/train/neg/3354_2.txt
-
 cnt = 631000
 crctRat = 0.981
 loss = 0.0012777902884408832
@@ -127,5 +107,42 @@ loss = 7.489006748073734e-09
 y = tensor([[8.6532e-05, 9.9991e-01]], grad_fn=<SoftmaxBackward0>)
 y0 = tensor([[0., 1.]])
 reviewFile = /root/data/aclImdb/train/neg/5538_4.txt
+
+----
+
+https://github.com/dhkim9549/ai-study/blob/main/imdb/train-review-torch-eval.py[evaluation]
+
+Using test data set, model evaluation was done.
+It achieved 86% success rate.
+
+----
+
+cnt = 0
+crctRat = 1.0
+loss = 1.4476287567485935e-19
+y = tensor([[1.0000e+00, 5.3808e-10]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[1., 0.]])
+reviewFile = /root/data/aclImdb/test/pos/12197_7.txt
+
+cnt = 1000
+crctRat = 0.863
+loss = 1.073484579900601e-14
+y = tensor([[1.0000e+00, 8.5199e-08]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[1., 0.]])
+reviewFile = /root/data/aclImdb/test/pos/7820_7.txt
+
+cnt = 2000
+crctRat = 0.841
+loss = 0.9999931454658508
+y = tensor([[1.0000e+00, 3.4086e-06]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/test/neg/3985_4.txt
+
+cnt = 3000
+crctRat = 0.867
+loss = 1.0947590056709089e-11
+y = tensor([[3.2793e-06, 1.0000e+00]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/test/neg/3728_1.txt
 
 ----
