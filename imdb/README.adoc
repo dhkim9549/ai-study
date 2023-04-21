@@ -147,3 +147,7 @@ y0 = tensor([[0., 1.]])
 reviewFile = /root/data/aclImdb/test/neg/3728_1.txt
 
 ----
+
+==== Serving nn as a REST API ====
+
+https://github.com/dhkim9549/ai-study/blob/main/imdb/app.py[app.py]
