@@ -1,3 +1,5 @@
+  Double your experiments, double your inventiveness.
+
 == IMDB review pos/neg prediction ==
 
 ==== Reference ====
