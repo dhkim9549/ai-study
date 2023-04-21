@@ -152,13 +152,17 @@ reviewFile = /root/data/aclImdb/test/neg/3728_1.txt
 
 https://github.com/dhkim9549/ai-study/blob/main/imdb/app.py[app.py]
 
+  $ flask run --host=0.0.0.0
+
 The nn is served using Flask.
+
+https://flask.palletsprojects.com/en/2.2.x/quickstart/[Flask Quickstart]
 
 http://bada.ai/ai/sentiment-analysis.html[Sentiment Analysis web page]
 
 The actual web page for the test.
 
-=== Discussions ===
+==== Discussions ====
 
 Relations among words cannot be considered with one-hot encoding.
 To consider the relations among words, attention mechanism is necessary.
