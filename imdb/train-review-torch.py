@@ -21,6 +21,21 @@ for x in f:
     if(i >= 10000):
         break
 
+def getTokenLst(str):
+    tokenLst = []
+    tokenLst += str.replace(".", "").replace("!", "").lower().split(" ")
+
+    x = np.zeros((1, len(voca)), dtype=float)
+
+    for token in tokenLst:
+        if token in voca:
+            i = voca[token]
+            x[0, i] += 1
+    x = np.minimum(x, 1.0)
+    x = torch.Tensor(x)
+
+    return x
+
 # nn
 class NeuralNetwork(nn.Module):
     def __init__(self):
@@ -28,6 +43,7 @@ class NeuralNetwork(nn.Module):
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(len(voca), 100),
             nn.ReLU(),
+            nn.Dropout(p=0.5),
             nn.Linear(100, 2),
             nn.Softmax()
         )
@@ -61,21 +77,14 @@ for cnt in range(40000000000000):
     reviewFile = fileLst[np.random.randint(len(fileLst))]
 
     f = open(reviewFile, "r")
-    tokenLst = []
+    str = '' 
     for line in f:
-        tokenLst += line.replace(".", "").replace("!", "").lower().split(" ")
+        str += line 
 
-    x = np.zeros((1, len(voca)), dtype=float)
-
-    for token in tokenLst:
-        if token in voca:
-            i = voca[token]
-            x[0, i] += 1
-    x = np.minimum(x, 1.0)
-    x = torch.Tensor(x)
+    x = getTokenLst(str) 
 
     y0 = np.array([[1.0, 0.0]])
-    if "neg" in reviewFile:
+    if 'neg' in reviewFile:
         y0 = np.array([[0.0, 1.0]])
 
     # infer
@@ -99,8 +108,13 @@ for cnt in range(40000000000000):
         print(f'reviewFile = {reviewFile}')
         totCnt = 0
         crctCnt = 0
+        torch.save(model.state_dict(), 'train-review-torch.pt')
 
     # backpropagation
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
+
+
+
+
