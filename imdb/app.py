@@ -9,6 +9,7 @@ import torch
 from torch import nn
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 # Load vocab
 f = open("/root/data/aclImdb/imdb.vocab", "r")
@@ -41,12 +42,13 @@ class NeuralNetwork(nn.Module):
 model = NeuralNetwork()
 print(f'model = {model}')
 
-model.load_state_dict(torch.load('train-review-torch.sd'))
+model.load_state_dict(torch.load('train-review-torch.pt'))
 model.eval()
 
 loss_fn = nn.MSELoss()
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/predict')
 def predict():
