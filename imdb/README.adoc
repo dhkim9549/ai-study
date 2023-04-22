@@ -171,3 +171,28 @@ https://arxiv.org/abs/1706.03762[Attention is all you need.]
 ==== Dropout ====
 
 Perform dropout to see better results can be acheived with the test data set.
+
+With dropout, slightly better result was acheived.
+
+----
+cnt = 88000
+crctRat = 0.8713310076021863
+loss = 0.0003201336367055774
+y = tensor([[0.0179, 0.9821]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/test/neg/254_3.txt
+
+cnt = 89000
+crctRat = 0.8710126852507275
+loss = 0.3714914321899414
+y = tensor([[0.6095, 0.3905]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/test/neg/6337_1.txt
+
+cnt = 90000
+crctRat = 0.8709236564038177
+loss = 0.01285428274422884
+y = tensor([[0.1134, 0.8866]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+
+----
