@@ -21,7 +21,8 @@ for x in f:
     if(i >= 10000):
         break
 
-def getTokenLst(str):
+# Cenverts str to numpy array
+def strToVec(str):
     tokenLst = []
     tokenLst += str.replace(".", "").replace("!", "").lower().split(" ")
 
@@ -81,11 +82,12 @@ for cnt in range(40000000000000):
     for line in f:
         str += line 
 
-    x = getTokenLst(str) 
+    x = strToVec(str) 
 
     y0 = np.array([[1.0, 0.0]])
     if 'neg' in reviewFile:
         y0 = np.array([[0.0, 1.0]])
+    
 
     # infer
     y = model(x)
