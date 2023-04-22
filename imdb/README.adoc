@@ -30,13 +30,9 @@ crctRat = 0.521
 crctRat = 0.554
 crctRat = 0.586
 crctRat = 0.555
-crctRat = 0.588
-crctRat = 0.557
 
 ...
 
-crctRat = 0.809
-crctRat = 0.798
 crctRat = 0.822
 crctRat = 0.828
 crctRat = 0.796
@@ -86,13 +82,6 @@ y0 = tensor([[0., 1.]])
 reviewFile = /root/data/aclImdb/train/neg/7855_1.txt
 
 ...
-
-cnt = 631000
-crctRat = 0.981
-loss = 0.0012777902884408832
-y = tensor([[0.0357, 0.9643]], grad_fn=<SoftmaxBackward0>)
-y0 = tensor([[0., 1.]])
-reviewFile = /root/data/aclImdb/train/neg/10299_4.txt
 
 cnt = 632000
 crctRat = 0.981
