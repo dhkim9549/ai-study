@@ -28,6 +28,7 @@ class NeuralNetwork(nn.Module):
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(len(voca), 100),
             nn.ReLU(),
+            nn.Dropout(p = 0.5),
             nn.Linear(100, 2),
             nn.Softmax()
         )
@@ -39,8 +40,13 @@ class NeuralNetwork(nn.Module):
 model = NeuralNetwork()
 print(f'model = {model}')
 
-model.load_state_dict(torch.load('train-review-torch.sd'))
+model.load_state_dict(torch.load('train-review-torch.pt'))
 model.eval()
+
+# Print model's state_dict
+print("Model's state_dict:")
+for param_tensor in model.state_dict():
+    print(param_tensor, "\t", model.state_dict()[param_tensor].size())
 
 loss_fn = nn.MSELoss()
 
@@ -60,7 +66,7 @@ for fileNm in filesNeg:
 crctCnt = 0
 totCnt = 0
 for cnt in range(40000000000000):
-    reviewFile = fileLst[np.random.randint(len(fileLst))]
+    reviewFile = fileLst[cnt % len(fileLst)]
 
     f = open(reviewFile, "r")
     tokenLst = []
@@ -99,8 +105,6 @@ for cnt in range(40000000000000):
         print(f'y = {y}')
         print(f'y0 = {y0}')
         print(f'reviewFile = {reviewFile}')
-        totCnt = 0
-        crctCnt = 0
 
 
 
