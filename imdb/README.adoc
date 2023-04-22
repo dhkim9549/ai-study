@@ -17,7 +17,7 @@ Make a list of vocabulary from the data set
 
 Train
 
-* Using the vocab list, an input text is encoded into vectors usnig one-hot encoding.
+* Using the vocab list, an input text is encoded into vectors using one-hot encoding.
 
 Result
 
@@ -52,7 +52,7 @@ Build a nn using PyTorch
 
 * Will this be faster than pure numpy?
 
-Indeed, the python program using PyTorch acheives near perfrect result with much faster training!
+Indeed, the python program using PyTorch acheives near perfrect result with much faster training. It seems the nn is overfit to the training data.
 
 ----
 # nohup python3 -u train-review-torch.py > train-review-torch.log &
@@ -145,5 +145,54 @@ loss = 1.0947590056709089e-11
 y = tensor([[3.2793e-06, 1.0000e+00]], grad_fn=<SoftmaxBackward0>)
 y0 = tensor([[0., 1.]])
 reviewFile = /root/data/aclImdb/test/neg/3728_1.txt
+
+----
+
+==== Serving nn as a REST API ====
+
+https://github.com/dhkim9549/ai-study/blob/main/imdb/app.py[app.py]
+
+  $ flask run --host=0.0.0.0
+
+The nn is served using Flask.
+
+https://flask.palletsprojects.com/en/2.2.x/quickstart/[Flask Quickstart]
+
+http://bada.ai/ai/sentiment-analysis.html[Sentiment Analysis web page]
+
+The actual web page for the test.
+
+==== Discussions ====
+Relations among words cannot be considered with one-hot encoding.
+To consider the relations among words, attention mechanism is necessary.
+
+https://arxiv.org/abs/1706.03762[Attention is all you need.]
+
+==== Dropout ====
+
+Perform dropout to see better results can be acheived with the test data set.
+
+With dropout, slightly better result was acheived.
+
+----
+cnt = 88000
+crctRat = 0.8713310076021863
+loss = 0.0003201336367055774
+y = tensor([[0.0179, 0.9821]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/test/neg/254_3.txt
+
+cnt = 89000
+crctRat = 0.8710126852507275
+loss = 0.3714914321899414
+y = tensor([[0.6095, 0.3905]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
+reviewFile = /root/data/aclImdb/test/neg/6337_1.txt
+
+cnt = 90000
+crctRat = 0.8709236564038177
+loss = 0.01285428274422884
+y = tensor([[0.1134, 0.8866]], grad_fn=<SoftmaxBackward0>)
+y0 = tensor([[0., 1.]])
 
 ----
