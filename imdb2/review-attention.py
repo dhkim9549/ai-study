@@ -1,5 +1,5 @@
 ##################################################
-# IMDB review pos/neg prediction
+# IMDB review pos/neg prediction using attention model
 # input v.size() = (L, E)
 #    L : Source sequece length
 #    E : Embedding dimension of the source (embed_size)
@@ -24,66 +24,64 @@ for x in f:
     if(i >= 1000):
         break
 
-embed_size = 10 
+embed_size = 64 
 embed_dim = embed_size 
-L = 50 
+L = 100 
 
 # Converts str to tensor
 def strToVec(str):
     tokenLst = []
     tokenLst += str.replace(".", "").replace("!", "").lower().split(" ")
 
-    X = np.array([[]])
-    j = 0
+    x = np.zeros(L, dtype=int)
 
+    j = 0
     for token in tokenLst:
-        x = np.zeros((1, len(voca)), dtype=float)
+        if j >= L:
+            break
         if token in voca:
             i = voca[token]
-            x[0, i] += 1
-        if j < L: # Truncate token list
-            if j == 0:
-                X = x
-            else:
-                X = np.vstack((X, x))
-            j += 1  
-    
-    while j < L:
-        X = np.vstack((X, np.zeros((1, len(voca)))))
+            x[j] = i
         j += 1
 
-    X = torch.Tensor(X)
+    x = torch.tensor(x, dtype=torch.int32)
 
-    return X 
+    return x 
 
 # nn
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
 
-        self.self_attention_context1 = nn.MultiheadAttention(embed_dim, 1)
+        self.tok_embed = nn.Embedding(len(voca), embed_size)  # token embedding
+        self.pos_embed = nn.Embedding(L, embed_size)  # position embedding
+        self.norm = nn.LayerNorm(embed_size)
+
         self.Wq = nn.LazyLinear(embed_size)
         self.Wk = nn.LazyLinear(embed_size)
         self.Wv = nn.LazyLinear(embed_dim)
-
+        self.self_attention_context1 = nn.MultiheadAttention(embed_dim, 1, dropout=0.5)
+        
         self.linear_relu_stack = nn.Sequential(
-            nn.LazyLinear(100),
+            nn.LazyLinear(50),
             nn.ReLU(),
-            nn.Dropout(p=0.5),
+            nn.Dropout(p = 0.5),
             nn.LazyLinear(2),
             nn.Softmax()
         )
 
     def forward(self, x):
-        q = self.Wq(x)
-        k = self.Wk(x)
-        v = self.Wv(x)
-        y = self.self_attention_context1(q, k, v)
+        xe = self.tok_embed(x)
+        pos = torch.arange(L, dtype=torch.long)
+        pe = self.pos_embed(pos)
+        z = self.norm(xe + pe) 
 
-        print(f'y = {y}')
-        fuck
+        q = self.Wq(z)
+        k = self.Wk(z)
+        v = self.Wv(z)
+        y, y_w = self.self_attention_context1(q, k, v)
 
-        y2 = self.linear_relu_stack(torch.flatten(y[0]))
+        y2 = self.linear_relu_stack(torch.flatten(y))
 
         return y2
 
@@ -91,7 +89,7 @@ model = NeuralNetwork()
 print(f'model = {model}')
 
 loss_fn = nn.MSELoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=0.002)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.02)
 
 # train
 fileLst = []
@@ -108,6 +106,7 @@ for fileNm in filesNeg:
 
 crctCnt = 0
 totCnt = 0
+flag = True 
 for cnt in range(100000000000000000000):
     reviewFile = fileLst[np.random.randint(len(fileLst))]
 
@@ -141,10 +140,14 @@ for cnt in range(100000000000000000000):
         print(f'y = {y}')
         print(f'y0 = {y0}')
         print(f'reviewFile = {reviewFile}')
-        print(model.self_attention_context1.state_dict())
+        print(model.Wv.state_dict())
         totCnt = 0
         crctCnt = 0
         torch.save(model.state_dict(), 'train-review-torch.pt')
+        if crctRat > 0.7 and flag:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 0.002 
+            flag = False 
 
     # backpropagation
     optimizer.zero_grad()
