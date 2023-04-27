@@ -7,9 +7,11 @@
 
 from os import listdir
 from os.path import isfile, join
+import datetime
 import numpy as np
 import torch
 from torch import nn
+import PosEnc
 
 # Load vocab
 f = open("/root/data/aclImdb/imdb.vocab", "r")
@@ -54,7 +56,7 @@ class NeuralNetwork(nn.Module):
         super(NeuralNetwork, self).__init__()
 
         self.tok_embed = nn.Embedding(len(voca), embed_size)  # token embedding
-        self.pos_embed = nn.Embedding(L, embed_size)  # position embedding
+        self.pos_enc = PosEnc.PositionalEncoding(embed_size, 0, L)  # position encoding 
         self.norm = nn.LayerNorm(embed_size)
 
         self.Wq = nn.LazyLinear(embed_size)
@@ -72,9 +74,8 @@ class NeuralNetwork(nn.Module):
 
     def forward(self, x):
         xe = self.tok_embed(x)
-        pos = torch.arange(L, dtype=torch.long)
-        pe = self.pos_embed(pos)
-        z = self.norm(xe + pe) 
+        pe = self.pos_enc(xe)
+        z = self.norm(pe) 
 
         q = self.Wq(z)
         k = self.Wk(z)
@@ -135,6 +136,7 @@ for cnt in range(100000000000000000000):
     if cnt % 1000 == 0:
         print()
         print(f'cnt = {cnt}')
+        print(datetime.datetime.now())
         print(f'crctRat = {crctRat}')
         print(f'loss = {loss}')
         print(f'y = {y}')
