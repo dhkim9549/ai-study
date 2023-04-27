@@ -56,7 +56,7 @@ class NeuralNetwork(nn.Module):
         super(NeuralNetwork, self).__init__()
 
         self.tok_embed = nn.Embedding(len(voca), embed_size)  # token embedding
-        self.pos_enc = PosEnc.PositionalEncoding(embed_size, 0.5, L)  # position encoding 
+        self.pos_enc = PosEnc.PositionalEncoding(embed_size, 0, L)  # position encoding 
         self.norm = nn.LayerNorm(embed_size)
 
         self.Wq = nn.LazyLinear(embed_size)
