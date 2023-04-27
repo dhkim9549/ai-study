@@ -56,7 +56,7 @@ class NeuralNetwork(nn.Module):
         super(NeuralNetwork, self).__init__()
 
         self.tok_embed = nn.Embedding(len(voca), embed_size)  # token embedding
-        self.pos_enc = PosEnc.PositionalEncoding(embed_size, 0, L)  # position encoding 
+        self.pos_enc = PosEnc.PositionalEncoding(embed_size, 0.5, L)  # position encoding 
         self.norm = nn.LayerNorm(embed_size)
 
         self.Wq = nn.LazyLinear(embed_size)
@@ -82,7 +82,8 @@ class NeuralNetwork(nn.Module):
         v = self.Wv(z)
         y, y_w = self.self_attention_context1(q, k, v)
 
-        y2 = self.linear_relu_stack(torch.flatten(y))
+        ya = torch.flatten(y)
+        y2 = self.linear_relu_stack(ya)
 
         return y2
 
