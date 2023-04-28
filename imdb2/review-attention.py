@@ -13,6 +13,8 @@ import torch
 from torch import nn
 import PosEnc
 
+torch.set_printoptions(profile="full")
+
 # Load vocab
 f = open("/root/data/aclImdb/imdb.vocab", "r")
 i = 0
@@ -48,7 +50,11 @@ def strToVec(str):
 
     x = torch.tensor(x, dtype=torch.int32)
 
-    return x 
+    aM = torch.zeros((L, L), dtype=torch.bool) # attn_mask
+    if j < L:
+        aM[j:, j:] = True
+
+    return x, aM 
 
 # nn
 class NeuralNetwork(nn.Module):
@@ -72,7 +78,7 @@ class NeuralNetwork(nn.Module):
             nn.Softmax()
         )
 
-    def forward(self, x):
+    def forward(self, x, mL):
         xe = self.tok_embed(x)
         pe = self.pos_enc(xe)
         z = self.norm(pe) 
@@ -80,7 +86,7 @@ class NeuralNetwork(nn.Module):
         q = self.Wq(z)
         k = self.Wk(z)
         v = self.Wv(z)
-        y, y_w = self.self_attention_context1(q, k, v)
+        y, y_w = self.self_attention_context1(q, k, v, attn_mask=mL)
 
         ya = torch.flatten(y)
         y2 = self.linear_relu_stack(ya)
@@ -117,14 +123,14 @@ for cnt in range(100000000000000000000):
     for line in f:
         str += line
 
-    x = strToVec(str)
+    x, aM = strToVec(str)
 
     y0 = np.array([1.0, 0.0])
     if 'neg' in reviewFile:
         y0 = np.array([0.0, 1.0])
 
     # infer
-    y = model(x)
+    y = model(x, aM)
 
     y0 = torch.Tensor(y0)
     loss = loss_fn(y, y0)
@@ -143,10 +149,10 @@ for cnt in range(100000000000000000000):
         print(f'y = {y}')
         print(f'y0 = {y0}')
         print(f'reviewFile = {reviewFile}')
-        print(model.Wv.state_dict())
         totCnt = 0
         crctCnt = 0
-        torch.save(model.state_dict(), 'train-review-torch.pt')
+        if cnt % 100000 == 0:
+            torch.save(model.state_dict(), 'train-review-torch.pt')
         if crctRat > 0.7 and flag:
             for param_group in optimizer.param_groups:
                 param_group['lr'] = 0.002 
