@@ -1,4 +1,9 @@
-==== Attention is all you need ====
+== Attention layer ==
 https://pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html[Pytorch Multi-Head Attention]
 
-Atttention model was used. However, only 75% accuraty was achieved on the test data set.
+To imporve the IMDB reviews sentiment alaysis, an atttention layer was used. However, only 75% accuraty was achieved on the test data set.
+
+Additional layer and function used:
+
+* torch.nn.Embedding
+* position encoding
