@@ -1,0 +1,4 @@
+==== Attention is all you need ====
+https://pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html[Pytorch Multi-Head Attention]
+
+Atttention model was used. However, only 75% accuraty was achieved on the test data set.
