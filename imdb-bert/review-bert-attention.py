@@ -1,8 +1,8 @@
-##################################################
-# IMDB review pos/neg prediction using DistilBERT and attention model
-#    L : Source sequece length
-#    embed_size : Embedding dimension of the source
-##################################################
+"""
+IMDB review pos/neg prediction using DistilBERT and attention model
+   L : Source sequece length
+   embed_size : Embedding dimension of the source
+"""
 
 from os import listdir
 from os.path import isfile, join
@@ -14,7 +14,7 @@ import PosEnc
 from transformers import DistilBertTokenizer, DistilBertModel
 
 embed_size = 768 
-embed_dim = embed_size 
+embed_dim = 70 
 L = 100 
 
 tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
@@ -53,13 +53,13 @@ class NeuralNetwork(nn.Module):
         self.pos_enc = PosEnc.PositionalEncoding(embed_size, 0, L)  # position encoding 
         self.norm = nn.LayerNorm(embed_size)
 
-        self.Wq = nn.LazyLinear(embed_size)
-        self.Wk = nn.LazyLinear(embed_size)
+        self.Wq = nn.LazyLinear(embed_dim)
+        self.Wk = nn.LazyLinear(embed_dim)
         self.Wv = nn.LazyLinear(embed_dim)
         self.self_attention_context1 = nn.MultiheadAttention(embed_dim, 1, dropout=0.5)
         
         self.linear_relu_stack = nn.Sequential(
-            nn.LazyLinear(50),
+            nn.LazyLinear(100),
             nn.ReLU(),
             nn.Dropout(p = 0.5),
             nn.LazyLinear(2),
@@ -138,8 +138,8 @@ for cnt in range(100000000000000000000):
         print(f'reviewFile = {reviewFile}')
         totCnt = 0
         crctCnt = 0
-        if cnt % 100000 == 0:
-            torch.save(model.state_dict(), 'train-review-torch.pt')
+        if cnt % 10000 == 0:
+            torch.save(model.state_dict(), 'review-bert-attention.pt')
         if crctRat > 0.7 and learningRat > 0.002:
             for param_group in optimizer.param_groups:
                 param_group['lr'] = 0.002 
