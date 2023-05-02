@@ -1,0 +1,9 @@
+== Attention layer ==
+https://pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html[Pytorch Multi-Head Attention]
+
+To imporve the IMDB reviews sentiment alaysis, an atttention layer was used. However, only 75% accuraty was achieved on the test data set.
+
+Additional layer and function used:
+
+* https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html[torch.nn.Embedding]
+* https://github.com/dhkim9549/ai-study/blob/main/imdb2/PosEnc.py[positional encoding]
