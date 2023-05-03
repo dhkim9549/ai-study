@@ -1,5 +1,5 @@
 """
-IMDB review pos/neg prediction using DistilBERT and attention model
+IMDB review pos/neg prediction using DistilBERT and attention model evaluation
    L : Source sequece length
    embed_size : Embedding dimension of the source
 """
@@ -84,20 +84,17 @@ model = NeuralNetwork()
 print(f'model = {model}')
 
 model.load_state_dict(torch.load('review-bert-attention.pt'))
+model.eval()
 
-learningRat = 0.0002
-loss_fn = nn.MSELoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=learningRat)
-
-# train
+# evaluation 
 fileLst = []
 
-pathPos = '/root/data/aclImdb/train/pos'
+pathPos = '/root/data/aclImdb/test/pos'
 filesPos = [f for f in listdir(pathPos) if isfile(join(pathPos, f))]
 for fileNm in filesPos:
     fileLst.append(pathPos + '/' + fileNm)
 
-pathNeg = '/root/data/aclImdb/train/neg'
+pathNeg = '/root/data/aclImdb/test/neg'
 filesNeg = [f for f in listdir(pathNeg) if isfile(join(pathNeg, f))]
 for fileNm in filesNeg:
     fileLst.append(pathNeg + '/' + fileNm)
@@ -122,7 +119,6 @@ for cnt in range(100000000000000000000):
     y = model(x, aM)
 
     y0 = torch.Tensor(y0)
-    loss = loss_fn(y, y0)
 
     # stat
     totCnt += 1
@@ -134,22 +130,6 @@ for cnt in range(100000000000000000000):
         print(f'cnt = {cnt}')
         print(datetime.datetime.now())
         print(f'crctRat = {crctRat}')
-        print(f'loss = {loss}')
         print(f'y = {y}')
         print(f'y0 = {y0}')
         print(f'reviewFile = {reviewFile}')
-        totCnt = 0
-        crctCnt = 0
-        if cnt % 1000 == 0:
-            torch.save(model.state_dict(), 'review-bert-attention.pt')
-        if crctRat > 0.7 and learningRat > 0.002:
-            for param_group in optimizer.param_groups:
-                param_group['lr'] = 0.002 
-            flag = False 
-
-    # backpropagation
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-
-
