@@ -21,28 +21,25 @@ tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
 distbert = DistilBertModel.from_pretrained("distilbert-base-uncased")
 
 def distbert_enc(input_text):
+    aM = torch.zeros((L, L), dtype=torch.bool) # attn_mask
     encoded_input = tokenizer(input_text, return_tensors='pt')
     x = encoded_input.input_ids
-    if x.size()[1] > L:
+    m = x.size()[1] 
+    if m > L:
         x = x[:, :L]
-    if x.size()[1] < L:
+    if m < L:
+        aM[m:, m:] = True
         xsize_diff = L - x.size()[1]
-        x_pad = torch.zeros((1, xsize_diff), dtype=int) + 102
+        x_pad = torch.zeros((1, xsize_diff), dtype=int)
         x = torch.cat((x, x_pad), dim=1)
     output = distbert(input_ids=x)
     y = output.last_hidden_state
     y = torch.squeeze(y)
-    return y 
+    return y, aM 
 
 # Converts str to tensor
 def strToVec(input_str):
-    x = distbert_enc(input_str)
-    aM = torch.zeros((L, L), dtype=torch.bool) # attn_mask
-    """
-    if j < L:
-        aM[j:, j:] = True
-    """
-
+    x, aM = distbert_enc(input_str)
     return x, aM 
 
 # nn
