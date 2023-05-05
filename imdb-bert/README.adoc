@@ -1,0 +1,2 @@
+== BERT ==
+Use pre-trained BERT (Bidirectional Encoder Representations from Transformers) as a baseline to predic pos/neg
