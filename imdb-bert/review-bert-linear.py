@@ -64,7 +64,7 @@ class NeuralNetwork(nn.Module):
 model = NeuralNetwork()
 print(f'model = {model}')
 
-model.load_state_dict(torch.load('review-bert-linear.pt'))
+#model.load_state_dict(torch.load('review-bert-linear.pt'))
 
 learningRat = 0.002
 loss_fn = nn.MSELoss()
@@ -91,7 +91,7 @@ for cnt in range(100000000000000000000):
     f = open(reviewFile, "r")
     str = ''
     for line in f:
-        str += line
+        str += line.replace('<br />', ' ') + ' '
 
     x = strToVec(str)
 

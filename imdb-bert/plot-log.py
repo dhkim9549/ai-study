@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-fileLst = ['review-bert-attention-out.txt', 'review-bert-attention-out-2.txt']
+fileLst = ['review-bert-linear-out.txt']
 
 yLst = []
 xWin = []
@@ -14,7 +14,7 @@ for reviewFile in fileLst:
             continue 
         tokenLst = line.split(' ')
         x = float(tokenLst[2])
-        if x > 0.99 or x < 0.6:
+        if x > 0.99 or x < 0.1:
             continue
         xWin.append(x)
         if len(xWin) > 100: 
