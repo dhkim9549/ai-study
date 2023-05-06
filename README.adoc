@@ -20,6 +20,8 @@ A machine learning framework
 ==== https://d2l.ai/index.html[Dive into Deep Learning] ====
 A deep learning book with code, math, and discussions. Implemented with PyTorch, NumPy/MXNet, JAX, and TensorFlow.
 
+==== https://udlbook.github.io/udlbook/[Understanding Deep Learning]
+
 
 
 === Study ===
