@@ -37,11 +37,16 @@ def distbert_enc(input_text):
     y = torch.squeeze(y)
     return y, aM 
 
+str_dict = {}
+
 # Converts str to tensor
 def strToVec(input_str):
-    x, aM = distbert_enc(input_str)
-    # x = x[1, :] # pooling
-    x = torch.flatten(x)
+    if input_str in str_dict:
+        return str_dict[input_str]
+    else:
+        x, aM = distbert_enc(input_str)
+        x = torch.flatten(x)
+        str_dict[input_str] = x.detach()
     return x
 
 # nn
@@ -73,12 +78,12 @@ optimizer = torch.optim.SGD(model.parameters(), lr=learningRat)
 # train
 fileLst = []
 
-pathPos = '/root/data/aclImdb/train/pos'
+pathPos = '/data/aclImdb/train/pos'
 filesPos = [f for f in listdir(pathPos) if isfile(join(pathPos, f))]
 for fileNm in filesPos:
     fileLst.append(pathPos + '/' + fileNm)
 
-pathNeg = '/root/data/aclImdb/train/neg'
+pathNeg = '/data/aclImdb/train/neg'
 filesNeg = [f for f in listdir(pathNeg) if isfile(join(pathNeg, f))]
 for fileNm in filesNeg:
     fileLst.append(pathNeg + '/' + fileNm)
@@ -119,6 +124,7 @@ for cnt in range(100000000000000000000):
         print(f'y = {y}')
         print(f'y0 = {y0}')
         print(f'reviewFile = {reviewFile}')
+        print(f'len(str_dict) = {len(str_dict)}')
         totCnt = 0
         crctCnt = 0
         if cnt % 1000 == 0:
