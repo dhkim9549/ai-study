@@ -45,7 +45,7 @@ def truncateStr(input_str):
     x = input_str.split(' ')
     y = ''
     for i in range(len(x)):
-        if i > 350:
+        if i > 300:
             break
         y += x[i] + ' '
     return y 
