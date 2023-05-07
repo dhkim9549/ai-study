@@ -23,6 +23,7 @@ distbert = DistilBertModel.from_pretrained("distilbert-base-uncased")
 def distbert_enc(input_text):
     aM = torch.zeros((L, L), dtype=torch.bool) # attn_mask
     encoded_input = tokenizer(input_text, return_tensors='pt')
+
     x = encoded_input.input_ids
     m = x.size()[1] 
     if m > L:
@@ -38,6 +39,16 @@ def distbert_enc(input_text):
     return y, aM 
 
 str_dict = {}
+
+# truncate string if the list of tokens is too long
+def truncateStr(input_str):
+    x = input_str.split(' ')
+    y = ''
+    for i in range(len(x)):
+        if i > 350:
+            break
+        y += x[i] + ' '
+    return y 
 
 # Converts str to tensor
 def strToVec(input_str):
@@ -94,11 +105,12 @@ for cnt in range(100000000000000000000):
     reviewFile = fileLst[np.random.randint(len(fileLst))]
 
     f = open(reviewFile, "r")
-    str = ''
+    s = ''
     for line in f:
-        str += line.replace('<br />', ' ') + ' '
+        s += line.replace('<br />', ' ') + ' '
 
-    x = strToVec(str)
+    s = truncateStr(s)
+    x = strToVec(s)
 
     y0 = np.array([1.0, 0.0])
     if 'neg' in reviewFile:
