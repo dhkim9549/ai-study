@@ -34,6 +34,7 @@ def distbert_enc(input_text):
         x = torch.cat((x, x_pad), dim=1)
     output = distbert(input_ids=x)
     y = output.last_hidden_state
+    y = y[:, 0, :] # [cls] token output 
     y = torch.squeeze(y)
     return y, aM 
 
