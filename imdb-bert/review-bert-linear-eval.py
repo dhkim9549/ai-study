@@ -128,4 +128,3 @@ for cnt in range(100000000000000000000):
         print(f'y = {y}')
         print(f'y0 = {y0}')
         print(f'reviewFile = {reviewFile}')
-        print(f'len(str_dict) = {len(str_dict)}')
