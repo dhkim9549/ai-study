@@ -1,7 +1,6 @@
 """
 IMDB review pos/neg prediction using DistilBERT with pooled output and linear model evaluation
    L : Source sequece length
-   embed_size : Embedding dimension of the source
 """
 
 from os import listdir
@@ -13,8 +12,6 @@ from torch import nn
 import PosEnc
 from transformers import DistilBertTokenizer, DistilBertModel
 
-embed_size = 768 
-embed_dim = 70 
 L = 100 
 
 tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
@@ -23,6 +20,7 @@ distbert = DistilBertModel.from_pretrained("distilbert-base-uncased")
 def distbert_enc(input_text):
     aM = torch.zeros((L, L), dtype=torch.bool) # attn_mask
     encoded_input = tokenizer(input_text, return_tensors='pt')
+
     x = encoded_input.input_ids
     m = x.size()[1] 
     if m > L:
@@ -34,19 +32,24 @@ def distbert_enc(input_text):
         x = torch.cat((x, x_pad), dim=1)
     output = distbert(input_ids=x)
     y = output.last_hidden_state
+    y = y[:, 0, :] # [cls] token output 
     y = torch.squeeze(y)
     return y, aM 
 
-str_dict = {}
+# truncate string if the list of tokens is too long
+def truncateStr(input_str):
+    x = input_str.split(' ')
+    y = ''
+    for i in range(len(x)):
+        if i > 300:
+            break
+        y += x[i] + ' '
+    return y 
 
 # Converts str to tensor
 def strToVec(input_str):
-    if input_str in str_dict:
-        return str_dict[input_str]
-    else:
-        x, aM = distbert_enc(input_str)
-        x = torch.flatten(x)
-        str_dict[input_str] = x.detach()
+    x, aM = distbert_enc(input_str)
+    x = torch.flatten(x)
     return x
 
 # nn
@@ -68,6 +71,7 @@ class NeuralNetwork(nn.Module):
 
 model = NeuralNetwork()
 print(f'model = {model}')
+model.eval()
 
 model.load_state_dict(torch.load('review-bert-linear.pt'))
 
@@ -92,18 +96,20 @@ for cnt in range(100000000000000000000):
     reviewFile = fileLst[np.random.randint(len(fileLst))]
 
     f = open(reviewFile, "r")
-    str = ''
+    s = ''
     for line in f:
-        str += line.replace('<br />', ' ') + ' '
+        s += line.replace('<br />', ' ') + ' '
 
-    x = strToVec(str)
+    s = truncateStr(s)
+    x = strToVec(s)
 
     y0 = np.array([1.0, 0.0])
     if 'neg' in reviewFile:
         y0 = np.array([0.0, 1.0])
 
     # infer
-    y = model(x)
+    with torch.no_grad():
+        y = model(x)
 
     y0 = torch.Tensor(y0)
     loss = loss_fn(y, y0)
@@ -123,6 +129,3 @@ for cnt in range(100000000000000000000):
         print(f'y0 = {y0}')
         print(f'reviewFile = {reviewFile}')
         print(f'len(str_dict) = {len(str_dict)}')
-
-
-
