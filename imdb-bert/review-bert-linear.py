@@ -14,7 +14,7 @@ import PosEnc
 from transformers import DistilBertTokenizer, DistilBertModel
 
 embed_size = 768 
-L = 250 
+L = 100 
 
 tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
 distbert = DistilBertModel.from_pretrained("distilbert-base-uncased")
