@@ -1,0 +1,20 @@
+== VOC text classfication ==
+
+==== Method ====
+Make a list of vocabulary from the data set
+
+Train
+
+* Using the vocab list, an input text is encoded into vectors using one-hot encoding.
+
+==== Serving nn as a REST API ====
+
+https://github.com/dhkim9549/ai-study/blob/main/voc/app.py[app.py]
+
+  $ flask run --host=0.0.0.0 --port=5001
+
+The nn is served using Flask.
+
+http://bada.ai/ai/voc-classification.html[VOC classification web page]
+
+The web page for the test.
