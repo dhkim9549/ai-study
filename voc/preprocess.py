@@ -23,6 +23,8 @@ for x in f:
 
     words = cont.split(' ')
     for w in words:
+        if w == '':
+            continue
         if w in vocabDict:
             vocabDict[w] += 1
         else:
@@ -48,13 +50,13 @@ x = {k: v for k, v in sorted(x.items(), key=lambda item: - item[1])}
 
 vocabDict = {k: v for k, v in sorted(vocabDict.items(), key=lambda item: - item[1])}
 
-f = open("vocab.txt", "w")
+f = open("voc-vocab.txt", "w")
 i = 0
 for w in vocabDict:
     f.write(w + '\n')
 
     i += 1
-    if i > 1000:
+    if i > 1000000000:
         break
 f.close()
 
