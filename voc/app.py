@@ -59,7 +59,11 @@ CORS(app)
 @app.route('/predict')
 def predict():
     cont = request.args.get('cont')
-    tokenLst = cont.replace(".", "").replace("!", "").lower().split(" ") 
+
+    cont = cont.replace('&#039;', ' ').replace('\n', ' ').replace('&quot;', ' ')
+    cont = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!]', ' ', cont)
+
+    tokenLst = cont.split(" ") 
     x = np.zeros((1, len(voca)), dtype=float)
 
     for token in tokenLst:
