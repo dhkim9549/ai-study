@@ -3,6 +3,8 @@
 #     make a vocab
 ##################################################
 
+import re
+
 brcdMap = {}
 dataDict = {}
 vocabDict = {}
@@ -15,7 +17,8 @@ for x in f:
     if i == 1:
         continue
 
-    x = x.replace('\n', '').replace('.', '').replace(',', '')
+    x = x.replace('&#039;', ' ').replace('\n', ' ').replace('&quot;', ' ')
+    x = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!]', ' ', x)
 
     tokens = x.split("\t")
     brcd = tokens[8]
