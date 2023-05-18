@@ -18,9 +18,6 @@ for x in f:
     if i == 1:
         continue
 
-    x = x.replace('&#039;', ' ').replace('\n', ' ').replace('&quot;', ' ')
-    x = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!]', ' ', x)
-
     tokens = x.split("\t")
     if len(tokens) != 9:
         continue
@@ -91,11 +88,13 @@ for x in f:
         break
 
 # Cenverts str to numpy array
-def strToVec(str):
-    tokenLst = []
-    tokenLst += str.replace(".", "").replace("!", "").lower().split(" ")
+def strToVec(s):
+    s = s.replace('&#039;', ' ').replace('&quot;', ' ')
+    s = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!\n\t]', ' ', s)
 
     x = np.zeros((1, len(voca)), dtype=float)
+
+    tokenLst = s.split(" ")
 
     for token in tokenLst:
         if token in voca:
