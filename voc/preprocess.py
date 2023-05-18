@@ -10,7 +10,7 @@ dataDict = {}
 vocabDict = {}
 
 # Make vocab
-f = open("/data/v-xy19-21/20230406_VOC_XY_DATA_200000-210000.txt", "r")
+f = open("/data/voc-all/20230518_VOC_XY_DATA_ALL.txt", "r")
 i = 0
 for x in f:
     i += 1
@@ -21,8 +21,29 @@ for x in f:
     x = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!]', ' ', x)
 
     tokens = x.split("\t")
+    if len(tokens) != 9:
+        continue
+
+    vocDy = tokens[1]
     brcd = tokens[8]
     cont = tokens[3] + ' ' + tokens[4]
+
+    if vocDy < '20200101':
+        continue
+
+    brcd = brcd.strip()
+    if '팀' in brcd:
+        continue
+    if brcd == '디지털금융부':
+        continue
+    if brcd == '정책모기지서비스센터':
+        continue
+    if brcd == '사회적가치부':
+        brcd = '고객만족부'
+    if brcd == '채권관리센터':
+        brcd = '종합금융센터'
+    if '지사' in brcd:
+        brcd = '지사'
 
     words = cont.split(' ')
     for w in words:
@@ -50,6 +71,7 @@ for x in f:
 
 x = brcdMap
 x = {k: v for k, v in sorted(x.items(), key=lambda item: - item[1])}
+print(x)
 
 vocabDict = {k: v for k, v in sorted(vocabDict.items(), key=lambda item: - item[1])}
 
@@ -62,10 +84,3 @@ for w in vocabDict:
     if i > 1000000000:
         break
 f.close()
-
-
-
-
-
-
-
