@@ -26,7 +26,25 @@ for x in f:
     if(i >= 10000):
         break
 
-brcdLst = ['정책모기지부', '유동화자산부', '주택보증부', '사회적가치부', '지사', '디지털금융부', '주택연금부', '준법경영부', 'ICT운영부', '주택금융연구원', '채권관리센터', '사업자보증부', 'ICT전략부', '인사부', '평가분석팀'] 
+# Cenverts str to numpy array
+def strToVec(s):
+    s = s.replace('&#039;', ' ').replace('&quot;', ' ')
+    s = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!\n\t]', ' ', s)
+
+    x = np.zeros((1, len(voca)), dtype=float)
+
+    tokenLst = s.split(" ")
+
+    for token in tokenLst:
+        if token in voca:
+            i = voca[token]
+            x[0, i] += 1
+    x = np.minimum(x, 1.0)
+    x = torch.Tensor(x)
+
+    return x
+
+brcdLst = ['고객만족부', '지사', '정책모기지부', '주택보증부', '유동화자산부', '종합금융센터', '주택연금부', 'ICT운영부', '인사부', '유동화증권부', '홍보실', '주택금융연구원', '사업자보증부', '경영혁신부', '채권관리부']
 
 # nn
 class NeuralNetwork(nn.Module):
@@ -47,7 +65,7 @@ class NeuralNetwork(nn.Module):
 model = NeuralNetwork()
 print(f'model = {model}')
 
-model.load_state_dict(torch.load('voc-train-20230514.pt'))
+model.load_state_dict(torch.load('voc-train.pt'))
 model.eval()
 
 loss_fn = nn.CrossEntropyLoss()
@@ -61,18 +79,7 @@ CORS(app)
 def predict():
     cont = request.args.get('cont')
 
-    cont = cont.replace('&#039;', ' ').replace('\n', ' ').replace('&quot;', ' ')
-    cont = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!]', ' ', cont)
-
-    tokenLst = cont.split(" ") 
-    x = np.zeros((1, len(voca)), dtype=float)
-
-    for token in tokenLst:
-        if token in voca:
-            i = voca[token]
-            x[0, i] += 1
-    x = np.minimum(x, 1.0)
-    x = torch.Tensor(x)
+    x = strToVec(cont)
 
     # infer
     y = model(x)
