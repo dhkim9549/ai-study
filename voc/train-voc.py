@@ -6,6 +6,10 @@ import re
 import numpy as np
 import torch
 from torch import nn
+import logging
+import datetime
+
+logging.basicConfig(filename = "logs/train-voc.log", level = logging.DEBUG)
 
 vocDict = {}
 brcdMap = {}
@@ -161,14 +165,16 @@ for cnt in range(2000000000000000000000000000):
         crctCnt += 1
     crctRat = crctCnt / totCnt
     if cnt % 10000 == 0:
-        print()
-        print(f'cnt = {cnt}')
-        print(f'crctRat = {crctRat}')
-        print(f'loss = {loss}')
-        print(f'y = {y}')
-        print(f'y0 = {y0}')
-        print(f'cont = {cont}')
-        print(f'brcd = {brcd}')
+        logging.info('')
+        logging.info(datetime.datetime.now())
+        logging.info(f'cnt = {cnt}')
+        logging.info(f'crctRat = {crctRat}')
+        logging.info(f'loss = {loss}')
+        logging.info(f'y = {y}')
+        logging.info(f'y0 = {y0}')
+        logging.info(f'cont = {cont}')
+        logging.info(f'brcd = {brcd}')
+
         totCnt = 0
         crctCnt = 0
         torch.save(model.state_dict(), 'voc-train.pt')
