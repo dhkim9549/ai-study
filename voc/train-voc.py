@@ -110,10 +110,10 @@ class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(len(voca), 100),
+            nn.LazyLinear(400),
             nn.ReLU(),
             nn.Dropout(p=0.5),
-            nn.Linear(100, len(brcdLst)),
+            nn.LazyLinear(len(brcdLst)),
             nn.Softmax()
         )
 
@@ -168,6 +168,7 @@ for cnt in range(2000000000000000000000000000):
         print(f'y = {y}')
         print(f'y0 = {y0}')
         print(f'cont = {cont}')
+        print(f'brcd = {brcd}')
         totCnt = 0
         crctCnt = 0
         torch.save(model.state_dict(), 'voc-train.pt')
