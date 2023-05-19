@@ -78,7 +78,7 @@ vocabDict = {k: v for k, v in sorted(vocabDict.items(), key=lambda item: - item[
 f = open("voc-vocab.txt", "w")
 i = 0
 for w in vocabDict:
-    f.write(w + '\n')
+    f.write(w + '\t' + str(vocabDict[w]) + '\n')
 
     i += 1
     if i > 1000000000:

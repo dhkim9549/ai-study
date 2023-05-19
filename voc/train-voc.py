@@ -84,11 +84,11 @@ i = 0
 voca = {}
 voca2 = {}
 for x in f:
-    token = x.split("\n")[0]
+    token = x.split()[0]
     voca[token] = i
     voca2[i] = token
     i += 1
-    if(i >= 10000):
+    if(i >= 40000):
         break
 
 # Cenverts str to numpy array
@@ -114,9 +114,6 @@ class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
         self.linear_relu_stack = nn.Sequential(
-            nn.LazyLinear(100),
-            nn.ReLU(),
-            nn.Dropout(p=0.5),
             nn.LazyLinear(100),
             nn.ReLU(),
             nn.Dropout(p=0.5),
