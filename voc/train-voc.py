@@ -91,6 +91,8 @@ for x in f:
     if(i >= 40000):
         break
 
+print(f'len(voca) = {len(voca)}')
+
 # Cenverts str to numpy array
 def strToVec(s):
     s = s.replace('&#039;', ' ').replace('&quot;', ' ')
