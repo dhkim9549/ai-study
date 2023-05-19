@@ -114,7 +114,10 @@ class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
         self.linear_relu_stack = nn.Sequential(
-            nn.LazyLinear(400),
+            nn.LazyLinear(100),
+            nn.ReLU(),
+            nn.Dropout(p=0.5),
+            nn.LazyLinear(100),
             nn.ReLU(),
             nn.Dropout(p=0.5),
             nn.LazyLinear(len(brcdLst)),
