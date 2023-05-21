@@ -10,13 +10,14 @@ import logging
 import datetime
 
 logging.basicConfig(filename="logs/train-voc.log",
-                    filemode='w',
+                    filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
 
 vocDict = {}
 brcdMap = {}
+trainDict = {}
 
 # Load training data 
 f = open("/data/voc-all/20230518_VOC_XY_DATA_ALL.txt", "r")
@@ -79,6 +80,12 @@ brcdLst = list(vocDict.keys())
 logging.info(f'brcdLst = {brcdLst}')
 logging.info(f'len(brcdLst) = {len(brcdLst)}')
 
+for brcd in vocDict:
+    for cont in vocDict[brcd]:
+        trainDict[cont] = brcd
+
+logging.info(f'len(trainDict) = {len(trainDict)}')
+
 # Load vocab
 f = open("voc-vocab.txt", "r")
 i = 0
@@ -129,23 +136,24 @@ class NeuralNetwork(nn.Module):
         return y 
 
 model = NeuralNetwork()
+model.load_state_dict(torch.load('voc-train.pt'))
+
 logging.info(f'model = {model}')
 loss_fn = nn.CrossEntropyLoss()
 logging.info(f'loss_fn = {loss_fn}')
-optimizer = torch.optim.SGD(model.parameters(), lr=0.002)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.0002)
 logging.info(f'optimizer = {optimizer}')
 
 crctCnt = 0
 totCnt = 0
 
+contLst = list(trainDict.keys())
+
 try:
     for cnt in range(1000000000000000000000000000):
 
-        brcd = brcdLst[np.random.randint(len(brcdLst))]
-
-        contLst = vocDict[brcd]
-
-        cont = contLst[np.random.randint(len(contLst))]
+        cont = contLst[np.random.randint(len(contLst))] 
+        brcd = trainDict[cont] 
 
         x = strToVec(cont)
 
@@ -157,17 +165,17 @@ try:
         # infer
         y = model(x)
         y_arg_max = torch.argmax(y)
+        brcd_infer = brcdLst[y_arg_max]
 
         y0 = torch.Tensor(y0)
         loss = loss_fn(y, y0)
 
         # stat
         totCnt += 1
-        if brcdIdx == y_arg_max:  
+        if (brcdIdx - y_arg_max) ** 2 < 0.01:  
             crctCnt += 1
         crctRat = crctCnt / totCnt
         if cnt % 10000 == 0:
-            logging.info('')
             logging.info(datetime.datetime.now())
             logging.info(f'cnt = {cnt}')
             logging.info(f'crctRat = {crctRat}')
@@ -176,6 +184,8 @@ try:
             logging.info(f'y0 = {y0}')
             logging.info(f'cont = {cont}')
             logging.info(f'brcd = {brcd}')
+            logging.info(f'brcd_infer = {brcd_infer}')
+            logging.info('----------------------------------------')
 
             totCnt = 0
             crctCnt = 0
