@@ -9,12 +9,16 @@ from torch import nn
 import logging
 import datetime
 
-logging.basicConfig(filename = "logs/train-voc.log", level = logging.DEBUG)
+logging.basicConfig(filename="logs/train-voc.log",
+                    filemode='w',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
 
 vocDict = {}
 brcdMap = {}
 
-# Make vocab
+# Load training data 
 f = open("/data/voc-all/20230518_VOC_XY_DATA_ALL.txt", "r")
 i = 0
 for x in f:
@@ -63,20 +67,17 @@ for x in f:
         dataLst.append(cont)
         vocDict[brcd] = dataLst
 
-    if i > 4000000000:
-        break
-
-x = brcdMap
-x = {k: v for k, v in sorted(x.items(), key=lambda item: - item[1])}
-
 vocDict = dict(filter(lambda elem:len(elem[1]) > 10, vocDict.items()))
+vocDict= {k: v for k, v in sorted(vocDict.items(), key=lambda item: - len(item[1]))}
 
-print(brcdMap)
-print(list(vocDict.keys()))
+tempMap = {}
+for k in vocDict:
+    tempMap[k] = len(vocDict[k]) 
+logging.info(f'tempMap = {tempMap}')
 
 brcdLst = list(vocDict.keys())
-print(f'brcdLst = {brcdLst}')
-print(f'len(brcdLst) = {len(brcdLst)}')
+logging.info(f'brcdLst = {brcdLst}')
+logging.info(f'len(brcdLst) = {len(brcdLst)}')
 
 # Load vocab
 f = open("voc-vocab.txt", "r")
@@ -88,10 +89,10 @@ for x in f:
     voca[token] = i
     voca2[i] = token
     i += 1
-    if(i >= 40000):
+    if(i >= 10000):
         break
 
-print(f'len(voca) = {len(voca)}')
+logging.info(f'len(voca) = {len(voca)}')
 
 # Cenverts str to numpy array
 def strToVec(s):
@@ -128,64 +129,65 @@ class NeuralNetwork(nn.Module):
         return y 
 
 model = NeuralNetwork()
-print(f'model = {model}')
-print()
-
+logging.info(f'model = {model}')
 loss_fn = nn.CrossEntropyLoss()
-print(f'loss_fn = {loss_fn}')
-print()
+logging.info(f'loss_fn = {loss_fn}')
 optimizer = torch.optim.SGD(model.parameters(), lr=0.002)
-print(f'optimizer = {optimizer}')
-print()
+logging.info(f'optimizer = {optimizer}')
 
 crctCnt = 0
 totCnt = 0
-for cnt in range(2000000000000000000000000000):
-    brcd = brcdLst[np.random.randint(len(brcdLst))]
 
-    contLst = vocDict[brcd]
+try:
+    for cnt in range(1000000000000000000000000000):
 
-    cont = contLst[np.random.randint(len(contLst))]
+        brcd = brcdLst[np.random.randint(len(brcdLst))]
 
-    x = strToVec(cont)
+        contLst = vocDict[brcd]
 
-    brcdIdx = brcdLst.index(brcd)
+        cont = contLst[np.random.randint(len(contLst))]
 
-    y0 = np.zeros((1, len(brcdLst)), dtype=float)
-    y0[0, brcdIdx] = 1.0
-    
-    # infer
-    y = model(x)
-    y_arg_max = torch.argmax(y)
+        x = strToVec(cont)
 
-    y0 = torch.Tensor(y0)
-    loss = loss_fn(y, y0)
+        brcdIdx = brcdLst.index(brcd)
 
-    # stat
-    totCnt += 1
-    if brcdIdx == y_arg_max:  
-        crctCnt += 1
-    crctRat = crctCnt / totCnt
-    if cnt % 10000 == 0:
-        logging.info('')
-        logging.info(datetime.datetime.now())
-        logging.info(f'cnt = {cnt}')
-        logging.info(f'crctRat = {crctRat}')
-        logging.info(f'loss = {loss}')
-        logging.info(f'y = {y}')
-        logging.info(f'y0 = {y0}')
-        logging.info(f'cont = {cont}')
-        logging.info(f'brcd = {brcd}')
+        y0 = np.zeros((1, len(brcdLst)), dtype=float)
+        y0[0, brcdIdx] = 1.0
+        
+        # infer
+        y = model(x)
+        y_arg_max = torch.argmax(y)
 
-        totCnt = 0
-        crctCnt = 0
-        torch.save(model.state_dict(), 'voc-train.pt')
+        y0 = torch.Tensor(y0)
+        loss = loss_fn(y, y0)
 
-    # backpropagation
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+        # stat
+        totCnt += 1
+        if brcdIdx == y_arg_max:  
+            crctCnt += 1
+        crctRat = crctCnt / totCnt
+        if cnt % 10000 == 0:
+            logging.info('')
+            logging.info(datetime.datetime.now())
+            logging.info(f'cnt = {cnt}')
+            logging.info(f'crctRat = {crctRat}')
+            logging.info(f'loss = {loss}')
+            logging.info(f'y = {y}')
+            logging.info(f'y0 = {y0}')
+            logging.info(f'cont = {cont}')
+            logging.info(f'brcd = {brcd}')
 
+            totCnt = 0
+            crctCnt = 0
+            torch.save(model.state_dict(), 'voc-train.pt')
+
+        # backpropagation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+except Exception:
+    logging.exception('Exception in training loop')
 
 
 
