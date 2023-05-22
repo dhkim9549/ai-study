@@ -17,9 +17,6 @@ for x in f:
     if i == 1:
         continue
 
-    x = x.replace('&#039;', ' ').replace('\n', ' ').replace('&quot;', ' ')
-    x = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!]', ' ', x)
-
     tokens = x.split("\t")
     if len(tokens) != 9:
         continue
@@ -45,7 +42,10 @@ for x in f:
     if '지사' in brcd:
         brcd = '지사'
 
-    words = cont.split(' ')
+    cont = cont.replace('&#039;', ' ').replace('\n', ' ').replace('&quot;', ' ')
+    cont = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!]', ' ', cont)
+
+    words = cont.split()
     for w in words:
         if w == '':
             continue
@@ -74,13 +74,17 @@ x = {k: v for k, v in sorted(x.items(), key=lambda item: - item[1])}
 print(x)
 
 vocabDict = {k: v for k, v in sorted(vocabDict.items(), key=lambda item: - item[1])}
+vocabSet = set() 
 
 f = open("voc-vocab.txt", "w")
 i = 0
 for w in vocabDict:
     f.write(w + '\t' + str(vocabDict[w]) + '\n')
+    vocabSet.add(w)
 
     i += 1
-    if i > 1000000000:
+    if i >= 40000:
         break
 f.close()
+
+print(f'len(vocabSet) = {len(vocabSet)}')
