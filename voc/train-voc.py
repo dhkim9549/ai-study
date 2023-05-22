@@ -10,7 +10,7 @@ import logging
 import datetime
 
 logging.basicConfig(filename="logs/train-voc.log",
-                    filemode='a',
+                    filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
@@ -128,7 +128,6 @@ class NeuralNetwork(nn.Module):
             nn.ReLU(),
             nn.Dropout(p=0.5),
             nn.LazyLinear(len(brcdLst)),
-            nn.Softmax()
         )
 
     def forward(self, x):
@@ -136,12 +135,12 @@ class NeuralNetwork(nn.Module):
         return y 
 
 model = NeuralNetwork()
-model.load_state_dict(torch.load('voc-train.pt'))
+# model.load_state_dict(torch.load('voc-train.pt'))
 
 logging.info(f'model = {model}')
 loss_fn = nn.CrossEntropyLoss()
 logging.info(f'loss_fn = {loss_fn}')
-optimizer = torch.optim.SGD(model.parameters(), lr=0.0002)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.002)
 logging.info(f'optimizer = {optimizer}')
 
 crctCnt = 0
@@ -149,11 +148,20 @@ totCnt = 0
 
 contLst = list(trainDict.keys())
 
+y0_cnt = np.zeros((1, len(brcdLst)), dtype=int)
+y_cnt = np.zeros((1, len(brcdLst)), dtype=int)
+
 try:
     for cnt in range(1000000000000000000000000000):
 
-        cont = contLst[np.random.randint(len(contLst))] 
+        cont = contLst[np.random.randint(len(contLst))]
         brcd = trainDict[cont] 
+
+        """
+        brcd = brcdLst[np.random.randint(len(brcdLst))]
+        contLst = vocDict[brcd]
+        cont = contLst[np.random.randint(len(contLst))]
+        """
 
         x = strToVec(cont)
 
@@ -161,10 +169,12 @@ try:
 
         y0 = np.zeros((1, len(brcdLst)), dtype=float)
         y0[0, brcdIdx] = 1.0
+        y0_cnt[0, brcdIdx] += 1
         
         # infer
         y = model(x)
         y_arg_max = torch.argmax(y)
+        y_cnt[0, y_arg_max] += 1
         brcd_infer = brcdLst[y_arg_max]
 
         y0 = torch.Tensor(y0)
@@ -185,10 +195,15 @@ try:
             logging.info(f'cont = {cont}')
             logging.info(f'brcd = {brcd}')
             logging.info(f'brcd_infer = {brcd_infer}')
+            logging.info(f'y0_cnt = {y0_cnt}')
+            logging.info(f'y_cnt = {y_cnt}')
             logging.info('----------------------------------------')
 
             totCnt = 0
             crctCnt = 0
+            y0_cnt = np.zeros((1, len(brcdLst)), dtype=int)
+            y_cnt = np.zeros((1, len(brcdLst)), dtype=int)
+
             torch.save(model.state_dict(), 'voc-train.pt')
 
         # backpropagation
