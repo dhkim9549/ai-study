@@ -9,7 +9,9 @@ from torch import nn
 import logging
 import datetime
 
-logging.basicConfig(filename="logs/train-voc-v20000-h200.log",
+nnName = 'train-voc-nc-v40000-h200'
+
+logging.basicConfig(filename='logs/' + nnName + '.log',
                     filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
@@ -20,7 +22,7 @@ brcdMap = {}
 trainDict = {}
 testDict = {}
 
-brcdLst = ['정책모기지부', '고객만족부', '지사', '유동화자산부', '주택보증부', '주택연금부', 'ICT운영부', '종합금융센터', '유동화증권부', '사업자보증부', '채권관리부', '인사부', '경영혁신부', '홍보실', '주택금융연구원']
+brcdLst = ['정책모기지부', '지사', '유동화자산부', '주택보증부', '주택연금부', 'ICT운영부', '종합금융센터', '유동화증권부', '사업자보증부', '채권관리부', '인사부', '경영혁신부', '홍보실', '주택금융연구원']
 
 # Load training data 
 f = open("/data/voc-all/20230518_VOC_XY_DATA_ALL.txt", "r")
@@ -52,14 +54,14 @@ for x in f:
     if '지사' in brcd:
         brcd = '지사'
 
-    if vocDy < '20200101' or vocDy > '20221231':
+    if vocDy < '20200101':
         continue
     if brcd not in brcdLst:
         continue
 
     cont = tokens[3] + ' ' + tokens[4]
 
-    if vocDy >= '20221101':
+    if vocDy >= '20230301':
         testDict[cont] = brcd
         continue
 
@@ -99,7 +101,7 @@ for x in f:
     voca[token] = i
     voca2[i] = token
     i += 1
-    if(i >= 20000):
+    if(i >= 40000):
         break
 
 logging.info(f'len(voca) = {len(voca)}')
@@ -267,7 +269,7 @@ try:
             y_cnt = np.zeros((1, len(brcdLst)), dtype=int)
 
         if cnt % 100000 == 0:
-            torch.save(model.state_dict(), 'voc-train-v20000-h200.pt')
+            torch.save(model.state_dict(), 'pt/' + nnName + '.pt')
 
         # backpropagation
         if (cnt + 1) % batchSize == 0:
