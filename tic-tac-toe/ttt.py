@@ -32,12 +32,6 @@ def getX(board):
     r = torch.tensor(c, dtype=torch.float32)
     return r 
 
-x = getX(board)
-print(f'x = {x}')
-
-y = model(x)
-print(f'y = {y}')
-
 def hasWon(board):
     for i in range(3):
         p = 0
@@ -84,9 +78,26 @@ def getPoint(board):
 def getAction(board):
     x = getX(board)
     y = model(x)
-    a = torch.argmax(y)
-    return a
+    print(f'y = {y}')
+    ti = torch.topk(y, 9).indices
+    print(f'ti = {ti}')
+    for i in range(9):
+        a = int(ti[i])
+        print(f'a = {a}')
+        print(f'divmod(a, 3) = {divmod(a, 3)}')
+        if board[divmod(a, 3)] == 0:
+            return a
+    return -1 
 
 def play():
-    board = np.zeros((3, 3))
+    board = np.zeros((3, 3), dtype=np.int16)
+    i = 0
+    while isOver(board) == False:
+        a = getAction(board)
+        board[divmod(a, 3)] = 1
+        print(board)
+        i += 1
+        if i >= 30:
+            break
 
+play()
