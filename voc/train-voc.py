@@ -9,7 +9,9 @@ from torch import nn
 import logging
 import datetime
 
-logging.basicConfig(filename="logs/train-voc.log",
+nnName = 'train-voc-nc-v40000-h200'
+
+logging.basicConfig(filename='logs/' + nnName + '.log',
                     filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
@@ -18,6 +20,9 @@ logging.basicConfig(filename="logs/train-voc.log",
 vocDict = {}
 brcdMap = {}
 trainDict = {}
+testDict = {}
+
+brcdLst = ['정책모기지부', '지사', '유동화자산부', '주택보증부', '주택연금부', 'ICT운영부', '종합금융센터', '유동화증권부', '사업자보증부', '채권관리부', '인사부', '경영혁신부', '홍보실', '주택금융연구원']
 
 # Load training data 
 f = open("/data/voc-all/20230518_VOC_XY_DATA_ALL.txt", "r")
@@ -35,9 +40,6 @@ for x in f:
     brcd = tokens[8]
     cont = tokens[3] + ' ' + tokens[4]
 
-    if vocDy < '20200101':
-        continue
-
     brcd = brcd.strip()
     if '팀' in brcd:
         continue
@@ -54,7 +56,14 @@ for x in f:
 
     if vocDy < '20200101':
         continue
+    if brcd not in brcdLst:
+        continue
+
     cont = tokens[3] + ' ' + tokens[4]
+
+    if vocDy >= '20230301':
+        testDict[cont] = brcd
+        continue
 
     if brcd in brcdMap:
         brcdMap[brcd] += 1
@@ -68,15 +77,11 @@ for x in f:
         dataLst.append(cont)
         vocDict[brcd] = dataLst
 
-vocDict = dict(filter(lambda elem:len(elem[1]) > 10, vocDict.items()))
-vocDict= {k: v for k, v in sorted(vocDict.items(), key=lambda item: - len(item[1]))}
-
 tempMap = {}
 for k in vocDict:
     tempMap[k] = len(vocDict[k]) 
 logging.info(f'tempMap = {tempMap}')
 
-brcdLst = list(vocDict.keys())
 logging.info(f'brcdLst = {brcdLst}')
 logging.info(f'len(brcdLst) = {len(brcdLst)}')
 
@@ -96,7 +101,7 @@ for x in f:
     voca[token] = i
     voca2[i] = token
     i += 1
-    if(i >= 10000):
+    if(i >= 40000):
         break
 
 logging.info(f'len(voca) = {len(voca)}')
@@ -104,11 +109,11 @@ logging.info(f'len(voca) = {len(voca)}')
 # Cenverts str to numpy array
 def strToVec(s):
     s = s.replace('&#039;', ' ').replace('&quot;', ' ')
-    s = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!\n\t]', ' ', s)
+    s = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!‘’]', ' ', s)
 
     x = np.zeros((1, len(voca)), dtype=float)
 
-    tokenLst = s.split(" ")
+    tokenLst = s.split()
 
     for token in tokenLst:
         if token in voca:
@@ -119,12 +124,59 @@ def strToVec(s):
 
     return x
 
+def evaluate():
+
+    logging.info('Evaluating...')
+
+    totCntEval = 0
+    crctCntEval = 0
+
+    y0_cnt_eval = np.zeros((1, len(brcdLst)), dtype=int)
+    y_cnt_eval = np.zeros((1, len(brcdLst)), dtype=int)
+
+    for cont in testDict: 
+
+        brcd = testDict[cont] 
+
+        x = strToVec(cont)
+
+        brcdIdx = brcdLst.index(brcd)
+
+        y0 = np.zeros((1, len(brcdLst)), dtype=float)
+        y0[0, brcdIdx] = 1.0
+        y0_cnt_eval[0, brcdIdx] += 1
+        
+        # infer
+        model.eval()
+        y = model(x)
+        model.train()
+
+        y_arg_max = torch.argmax(y)
+        y_cnt_eval[0, y_arg_max] += 1
+        brcd_infer = brcdLst[y_arg_max]
+
+        y0 = torch.Tensor(y0)
+
+        # stat
+        totCntEval += 1
+        if (brcdIdx - y_arg_max) ** 2 < 0.01:  
+            crctCntEval += 1
+        crctRatEval = crctCntEval / totCntEval
+
+    logging.info(f'totCntEval = {totCntEval}')
+    logging.info(f'crctRatEval = {crctRatEval}')
+    logging.info(f'y = {y}')
+    logging.info(f'y0 = {y0}')
+    logging.info(f'y0_cnt_eval = {y0_cnt_eval}')
+    logging.info(f'y_cnt_eval = {y_cnt_eval}')
+    logging.info('Evaluation end...')
+
 # nn
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
         self.linear_relu_stack = nn.Sequential(
-            nn.LazyLinear(100),
+            nn.LazyLinear(200),
             nn.ReLU(),
             nn.Dropout(p=0.5),
             nn.LazyLinear(len(brcdLst)),
@@ -151,8 +203,11 @@ contLst = list(trainDict.keys())
 y0_cnt = np.zeros((1, len(brcdLst)), dtype=int)
 y_cnt = np.zeros((1, len(brcdLst)), dtype=int)
 
+batchSize = 1 
+Y, Y0 = None, None 
+
 try:
-    for cnt in range(1000000000000000000000000000):
+    for cnt in range(1000001):
 
         cont = contLst[np.random.randint(len(contLst))]
         brcd = trainDict[cont] 
@@ -173,12 +228,19 @@ try:
         
         # infer
         y = model(x)
+        if cnt % batchSize == 0:
+            Y = y
+        else:
+            Y = torch.vstack((Y, y))
         y_arg_max = torch.argmax(y)
         y_cnt[0, y_arg_max] += 1
         brcd_infer = brcdLst[y_arg_max]
 
         y0 = torch.Tensor(y0)
-        loss = loss_fn(y, y0)
+        if cnt % batchSize == 0:
+            Y0 = y0
+        else:
+            Y0 = torch.vstack((Y0, y0))
 
         # stat
         totCnt += 1
@@ -189,7 +251,6 @@ try:
             logging.info(datetime.datetime.now())
             logging.info(f'cnt = {cnt}')
             logging.info(f'crctRat = {crctRat}')
-            logging.info(f'loss = {loss}')
             logging.info(f'y = {y}')
             logging.info(f'y0 = {y0}')
             logging.info(f'cont = {cont}')
@@ -197,29 +258,29 @@ try:
             logging.info(f'brcd_infer = {brcd_infer}')
             logging.info(f'y0_cnt = {y0_cnt}')
             logging.info(f'y_cnt = {y_cnt}')
-            logging.info('----------------------------------------')
+
+            evaluate()
+
+            logging.info('--------------------------------------------------------------------------------')
 
             totCnt = 0
             crctCnt = 0
             y0_cnt = np.zeros((1, len(brcdLst)), dtype=int)
             y_cnt = np.zeros((1, len(brcdLst)), dtype=int)
 
-            torch.save(model.state_dict(), 'voc-train.pt')
+        if cnt % 100000 == 0:
+            torch.save(model.state_dict(), 'pt/' + nnName + '.pt')
 
         # backpropagation
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        if (cnt + 1) % batchSize == 0:
+            loss = loss_fn(Y, Y0)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
 
 except Exception:
     logging.exception('Exception in training loop')
-
-
-
-
-
-
-
 
 
 

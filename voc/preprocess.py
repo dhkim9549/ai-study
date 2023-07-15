@@ -8,6 +8,7 @@ import re
 brcdMap = {}
 dataDict = {}
 vocabDict = {}
+vocMnDict = {}
 
 # Make vocab
 f = open("/data/voc-all/20230518_VOC_XY_DATA_ALL.txt", "r")
@@ -22,10 +23,11 @@ for x in f:
         continue
 
     vocDy = tokens[1]
+    vocMn = vocDy[:6]
     brcd = tokens[8]
     cont = tokens[3] + ' ' + tokens[4]
 
-    if vocDy < '20200101':
+    if vocDy < '20200101' or vocDy >= '20221101':
         continue
 
     brcd = brcd.strip()
@@ -43,7 +45,7 @@ for x in f:
         brcd = '지사'
 
     cont = cont.replace('&#039;', ' ').replace('\n', ' ').replace('&quot;', ' ')
-    cont = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!]', ' ', cont)
+    cont = re.sub(r'[:\*\?/\(\)\[\]~\.,\\？!‘’]', ' ', cont)
 
     words = cont.split()
     for w in words:
@@ -66,8 +68,10 @@ for x in f:
         dataLst.append(cont)
         dataDict[brcd] = dataLst
 
-    if i > 4000000000:
-        break
+    if vocMn in vocMnDict:
+        vocMnDict[vocMn] += 1
+    else:
+        vocMnDict[vocMn] = 1
 
 x = brcdMap
 x = {k: v for k, v in sorted(x.items(), key=lambda item: - item[1])}
@@ -75,6 +79,8 @@ print(x)
 
 vocabDict = {k: v for k, v in sorted(vocabDict.items(), key=lambda item: - item[1])}
 vocabSet = set() 
+
+vocMnDict = {k: v for k, v in sorted(vocMnDict.items(), key=lambda item: item[0])}
 
 f = open("voc-vocab.txt", "w")
 i = 0
@@ -88,3 +94,4 @@ for w in vocabDict:
 f.close()
 
 print(f'len(vocabSet) = {len(vocabSet)}')
+print(f'vocMnDict = {vocMnDict}')
