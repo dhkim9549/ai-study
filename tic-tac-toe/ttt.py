@@ -24,6 +24,9 @@ class NeuralNetwork(nn.Module):
 model = NeuralNetwork()
 print(model)
 
+loss_fn = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.002)
+
 def getX(board):
     x = np.maximum(board.flatten(), 0)
     y = np.maximum(- board.flatten(), 0)
@@ -55,7 +58,6 @@ def hasWon(board):
     return False;
 
 w = hasWon(board);
-print(f'w = {w}')
 
 def isOver(board):
     s = np.sum(np.absolute(board.flatten()))
@@ -66,7 +68,6 @@ def isOver(board):
     return False
 
 o = isOver(board)
-print(f'o = {o}')
 
 def getPoint(board):
     if hasWon(board):
@@ -78,26 +79,72 @@ def getPoint(board):
 def getAction(board):
     x = getX(board)
     y = model(x)
-    print(f'y = {y}')
     ti = torch.topk(y, 9).indices
-    print(f'ti = {ti}')
     for i in range(9):
         a = int(ti[i])
-        print(f'a = {a}')
-        print(f'divmod(a, 3) = {divmod(a, 3)}')
         if board[divmod(a, 3)] == 0:
             return a
     return -1 
 
+def getRandomAction(board):
+    while true:
+        a = np.random.randint(0, 9)
+        if board[divmod(a, 3)] == 0:
+            return a
+    return -1
+
+def evaluate(model):
+    for i in range(1):
+        board = np.zeros((3, 3), dtype=np.int16)
+        s = int(i) % 2 == 0 ? 1 : -1
+        while True:
+            if s == 1:
+                a = getAction(board)
+            board[divmod(a, 3)] = 1
+
+
+
+
+
 def play():
     board = np.zeros((3, 3), dtype=np.int16)
+    boardArr = []
+    actionArr = []
     i = 0
-    while isOver(board) == False:
+    while True:
         a = getAction(board)
+        boardArr.append(np.copy(board))
+        actionArr.append(a)
+
         board[divmod(a, 3)] = 1
-        print(board)
-        i += 1
-        if i >= 30:
+
+        if isOver(board):
             break
 
-play()
+        board *= -1
+        i += 1
+
+    if not hasWon(board):
+        return
+
+    # sample train data
+    r = np.random.randint(0, len(boardArr))
+
+    x = getX(boardArr[r])
+    y = model(x)
+    y0 = torch.zeros(9)
+    y0[actionArr[r]] = 1
+    if (int(i) % 2 == 0 and int(r) % 2 == 1) or (int(i) % 2 == 1 and int(r) % 2 == 0):
+        y0 = 1 - y0
+    print(f'y0 = {y0}')
+
+    loss = loss_fn(y, y0)
+    print(f'loss = {loss}')
+
+    # Backpropagation
+    loss.backward()
+    optimizer.step()
+    optimizer.zero_grad()
+
+for i in range(100):
+    play()
