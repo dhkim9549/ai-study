@@ -14,7 +14,7 @@ class NeuralNetwork(nn.Module):
         self.linear_relu_stack = nn.Sequential(
             nn.LazyLinear(50),
             nn.ReLU(),
-            nn.LazyLinear(9),
+            nn.LazyLinear(1),
         )
 
     def forward(self, x):
@@ -24,7 +24,7 @@ class NeuralNetwork(nn.Module):
 model = NeuralNetwork()
 print(model)
 
-loss_fn = nn.CrossEntropyLoss()
+loss_fn = nn.MSELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.002)
 
 def getX(board):
@@ -77,74 +77,121 @@ def getPoint(board):
     return 0
 
 def getAction(board):
-    x = getX(board)
-    y = model(x)
-    ti = torch.topk(y, 9).indices
+    board = np.array(board)
+    maxY = -999999999
+    maxI = -1
     for i in range(9):
-        a = int(ti[i])
-        if board[divmod(a, 3)] == 0:
-            return a
-    return -1 
+        if board[divmod(i, 3)] != 0:
+            continue
+        board[divmod(i, 3)] = 1;
+        x = getX(board)
+        y = model(x)
+        if y > maxY:
+            maxY = y
+            maxI = i
+    return maxI
+
+def getMatrix():
+    matrix = np.zeros((3, 3))
+    for i in range(9):
+        board = np.zeros((3, 3), dtype=np.int16)
+        board[divmod(i, 3)] = 1;
+        matrix[divmod(i, 3)] = model(getX(board)) 
+    print(f'matrix = {matrix}')
 
 def getRandomAction(board):
-    while true:
+    while True:
         a = np.random.randint(0, 9)
         if board[divmod(a, 3)] == 0:
             return a
     return -1
 
-def evaluate(model):
-    for i in range(1):
-        board = np.zeros((3, 3), dtype=np.int16)
-        s = int(i) % 2 == 0 ? 1 : -1
-        while True:
-            if s == 1:
-                a = getAction(board)
-            board[divmod(a, 3)] = 1
+def getAction2(board):
+    r = np.random.random()
+    if r <= 0.1:
+        return getRandomAction(board)
+    else:
+        return getAction(board)
 
-
-
-
-
-def play():
+def play(action1, action2):
     board = np.zeros((3, 3), dtype=np.int16)
     boardArr = []
-    actionArr = []
+    score = 0
     i = 0
-    while True:
-        a = getAction(board)
-        boardArr.append(np.copy(board))
-        actionArr.append(a)
-
+    while not isOver(board):
+        a = action1(board) if int(i) % 2 == 0 else action2(board)
         board[divmod(a, 3)] = 1
-
-        if isOver(board):
-            break
-
+        boardArr.append(np.copy(board))
         board *= -1
         i += 1
+    if int(i) % 2 == 1:
+        board *= -1
+    if hasWon(board):
+        score = 1
+    elif hasWon(- board):
+        score = -1
 
-    if not hasWon(board):
-        return
+    return (score, boardArr)
+
+def evaluate():
+    win, tie, lose, cnt = 0, 0, 0, 0
+    for i in range(100):
+        score = 0
+        cnt += 1
+        if int(i) % 2 == 0:
+            score, boardArr = play(getAction, getRandomAction)
+            if score > 0:
+                win += 1
+            elif score < 0:
+                lose += 1
+            else:
+                tie += 1
+        else:
+            score, boardArr = play(getRandomAction, getAction)
+            if score > 0:
+                lose += 1
+            elif score < 0:
+                win += 1
+            else:
+                tie += 1
+    print (win, tie, lose, cnt)
+
+    getMatrix()
+
+
+
+
+X = None
+Y0 = None
+
+for i in range(100000000000000):
+
+    score, boardArr = play(getAction2, getAction2)
 
     # sample train data
     r = np.random.randint(0, len(boardArr))
-
     x = getX(boardArr[r])
-    y = model(x)
-    y0 = torch.zeros(9)
-    y0[actionArr[r]] = 1
-    if (int(i) % 2 == 0 and int(r) % 2 == 1) or (int(i) % 2 == 1 and int(r) % 2 == 0):
-        y0 = 1 - y0
-    print(f'y0 = {y0}')
+    y0 = score * (1 if int(r) % 2 == 0 else -1)
+    y0 = torch.tensor(y0, dtype=torch.float32)
+    if int(i) % 16 == 0:
+        X = torch.tensor(x)
+        Y0 = torch.tensor(y0)
+    else:
+        X = torch.vstack((X, x))
+        Y0 = torch.vstack((Y0, y0))
 
-    loss = loss_fn(y, y0)
-    print(f'loss = {loss}')
+    if int(i) % 16 == 15:
+        Y = model(X)
+        loss = loss_fn(Y, Y0)
 
-    # Backpropagation
-    loss.backward()
-    optimizer.step()
-    optimizer.zero_grad()
+        # Backpropagation
+        loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
 
-for i in range(100):
-    play()
+    if i % 1000 == 0:
+        print(f'i = {i}')
+        evaluate()
+
+
+
