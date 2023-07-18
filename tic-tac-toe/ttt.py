@@ -59,8 +59,6 @@ def hasWon(board):
         return True;
     return False;
 
-w = hasWon(board);
-
 def isOver(board):
     s = np.sum(np.absolute(board.flatten()))
     if s >= 9:
@@ -68,15 +66,6 @@ def isOver(board):
     if hasWon(board) or hasWon(- board):
         return True
     return False
-
-o = isOver(board)
-
-def getPoint(board):
-    if hasWon(board):
-        return 1
-    if hasWon(- board):
-        return -1
-    return 0
 
 def getAction(board):
     board = np.array(board)
@@ -110,7 +99,7 @@ def getRandomAction(board):
 
 def getAction2(board):
     r = np.random.random()
-    if r <= 0.3:
+    if r <= 0.1:
         return getRandomAction(board)
     else:
         return getAction(board)
