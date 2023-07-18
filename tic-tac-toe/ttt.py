@@ -12,7 +12,9 @@ class NeuralNetwork(nn.Module):
     def __init__(self):
         super().__init__()
         self.linear_relu_stack = nn.Sequential(
-            nn.LazyLinear(50),
+            nn.LazyLinear(100),
+            nn.ReLU(),
+            nn.LazyLinear(100),
             nn.ReLU(),
             nn.LazyLinear(1),
         )
@@ -25,7 +27,7 @@ model = NeuralNetwork()
 print(model)
 
 loss_fn = nn.MSELoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=0.002)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.0002)
 
 def getX(board):
     x = np.maximum(board.flatten(), 0)
@@ -108,7 +110,7 @@ def getRandomAction(board):
 
 def getAction2(board):
     r = np.random.random()
-    if r <= 0.1:
+    if r <= 0.3:
         return getRandomAction(board)
     else:
         return getAction(board)
@@ -135,7 +137,7 @@ def play(action1, action2):
 
 def evaluate():
     win, tie, lose, cnt = 0, 0, 0, 0
-    for i in range(100):
+    for i in range(1000):
         score = 0
         cnt += 1
         if int(i) % 2 == 0:
@@ -189,7 +191,7 @@ for i in range(100000000000000):
         optimizer.step()
         optimizer.zero_grad()
 
-    if i % 1000 == 0:
+    if i % 10000 == 0:
         print(f'i = {i}')
         evaluate()
 
