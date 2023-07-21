@@ -1,12 +1,18 @@
 import numpy as np
 import torch
 from torch import nn
+import logging
+import datetime
 
-board = np.zeros((3, 3))
-board[1, 1] = 1
-board[0, 0] = -1
+nnName = 'train-tic'
 
-print(f'board = {board}')
+logging.basicConfig(filename='logs/' + nnName + '.log',
+                    filemode='w',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
+
+g_i = 0
 
 class NeuralNetwork(nn.Module):
     def __init__(self):
@@ -16,7 +22,7 @@ class NeuralNetwork(nn.Module):
             nn.ReLU(),
             nn.LazyLinear(100),
             nn.ReLU(),
-            nn.LazyLinear(1),
+            nn.LazyLinear(2)
         )
 
     def forward(self, x):
@@ -24,10 +30,10 @@ class NeuralNetwork(nn.Module):
         return logits
 
 model = NeuralNetwork()
-print(model)
+logging.info(model)
 
-loss_fn = nn.MSELoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=0.0002)
+loss_fn = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.002)
 
 def getX(board):
     x = np.maximum(board.flatten(), 0)
@@ -67,28 +73,25 @@ def isOver(board):
         return True
     return False
 
-def getAction(board):
-    board = np.array(board)
+def getAction(pBoard, display=False):
+    matrix = np.zeros((3, 3))
     maxY = -999999999
     maxI = -1
     for i in range(9):
+        board = np.array(pBoard)
         if board[divmod(i, 3)] != 0:
             continue
         board[divmod(i, 3)] = 1;
         x = getX(board)
         y = model(x)
+        y = torch.softmax(y, dim = 0)[0]
+        matrix[divmod(i, 3)] = y
         if y > maxY:
             maxY = y
             maxI = i
+    if display == True:
+        logging.info(f'matrix =\n{matrix}')
     return maxI
-
-def getMatrix():
-    matrix = np.zeros((3, 3))
-    for i in range(9):
-        board = np.zeros((3, 3), dtype=np.int16)
-        board[divmod(i, 3)] = 1;
-        matrix[divmod(i, 3)] = model(getX(board)) 
-    print(f'matrix = {matrix}')
 
 def getRandomAction(board):
     while True:
@@ -99,7 +102,8 @@ def getRandomAction(board):
 
 def getAction2(board):
     r = np.random.random()
-    if r <= 0.1:
+    th = g_i / 1000000
+    if r >= th or r >= 0.9:
         return getRandomAction(board)
     else:
         return getAction(board)
@@ -145,9 +149,20 @@ def evaluate():
                 win += 1
             else:
                 tie += 1
-    print (win, tie, lose, cnt)
+    logging.info((win, tie, lose, cnt)) 
 
-    getMatrix()
+    board = np.zeros((3, 3), dtype=np.int16)
+    getAction(board, display=True)
+
+    board = np.zeros((3, 3), dtype=np.int16)
+    board[0, 1] = -1
+    getAction(board, display=True)
+
+    board = np.zeros((3, 3), dtype=np.int16)
+    board[1, 1] = -1
+    board[0, 0] = 1
+    board[0, 1] = -1
+    getAction(board, display=True)
 
 
 
@@ -157,32 +172,41 @@ Y0 = None
 
 for i in range(100000000000000):
 
-    score, boardArr = play(getAction2, getAction2)
+    g_i = i
+
+    if i % 30000 == 0:
+        logging.info(f'i = {i}')
+        evaluate()
+
+    score, boardArr = None, None 
+
+    if int(i) % 2 == 0:
+        score, boardArr = play(getAction2, getAction2)
+    else:
+        score, boardArr = play(getAction2, getAction2)
 
     # sample train data
     r = np.random.randint(0, len(boardArr))
+
     x = getX(boardArr[r])
     y0 = score * (1 if int(r) % 2 == 0 else -1)
-    y0 = torch.tensor(y0, dtype=torch.float32)
-    if int(i) % 16 == 0:
-        X = torch.tensor(x)
-        Y0 = torch.tensor(y0)
+    if (y0 - 1) ** 2 < 0.001:
+        y0 = torch.tensor([1, 0], dtype=torch.float32)
+    elif (y0 + 1) ** 2 < 0.001:
+        y0 = torch.tensor([0, 1], dtype=torch.float32)
     else:
-        X = torch.vstack((X, x))
-        Y0 = torch.vstack((Y0, y0))
+        y0 = torch.tensor([0.5, 0.5], dtype=torch.float32) 
 
-    if int(i) % 16 == 15:
-        Y = model(X)
-        loss = loss_fn(Y, Y0)
+    y = model(x)
+    loss = loss_fn(y, y0)
+    if i % 9001 == 0:
+        logging.info((x, y, y0))
 
-        # Backpropagation
-        loss.backward()
-        optimizer.step()
-        optimizer.zero_grad()
+    # Backpropagation
+    loss.backward()
+    optimizer.step()
+    optimizer.zero_grad()
 
-    if i % 10000 == 0:
-        print(f'i = {i}')
-        evaluate()
 
 
 
