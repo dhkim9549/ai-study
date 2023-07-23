@@ -103,7 +103,7 @@ def getRandomAction(board):
 def getAction2(board):
     r = np.random.random()
     th = g_i / 1000000
-    if r >= th or r >= 0.9:
+    if r >= th or r >= 0.999999:
         return getRandomAction(board)
     else:
         return getAction(board)
@@ -130,7 +130,7 @@ def play(action1, action2):
 
 def evaluate():
     win, tie, lose, cnt = 0, 0, 0, 0
-    for i in range(1000):
+    for i in range(10000):
         score = 0
         cnt += 1
         if int(i) % 2 == 0:
@@ -174,7 +174,7 @@ for i in range(100000000000000):
 
     g_i = i
 
-    if i % 30000 == 0:
+    if i % 100000 == 0:
         logging.info(f'i = {i}')
         evaluate()
 
@@ -199,7 +199,7 @@ for i in range(100000000000000):
 
     y = model(x)
     loss = loss_fn(y, y0)
-    if i % 9001 == 0:
+    if i % 100001 == 0:
         logging.info((x, y, y0))
 
     # Backpropagation
