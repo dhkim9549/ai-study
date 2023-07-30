@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch import nn
+from torch.distributions.dirichlet import Dirichlet
 import logging
 import datetime
 
@@ -9,7 +10,7 @@ nnName = 'train-tic'
 logging.basicConfig(filename='logs/' + nnName + '.log',
                     filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                    datefmt='%H:%M:%S',
+                    datefmt='%Y/%m/%d %H:%M:%S',
                     level=logging.DEBUG)
 
 g_i = 0
@@ -73,8 +74,48 @@ def isOver(board):
         return True
     return False
 
-def getAction(pBoard, display=False):
+def getValue(pBoard):
+    if hasWon(pBoard):
+        return 1
+    if hasWon(- pBoard):
+        return 0
+    if isOver(pBoard):
+        return 0.5
+
+    maxY = -999999999
+    maxI = -1
+    for i in range(9):
+        board = np.array(pBoard)
+        board *= -1
+        if board[divmod(i, 3)] != 0:
+            continue
+        board[divmod(i, 3)] = 1;
+        y = getValue(board)
+        y = 1 - y
+        if y > maxY:
+            maxY = y
+
+    return maxY
+        
+bb = np.zeros((3, 3))
+bb[1, 1] = 1
+bb[0, 1] = -1
+bb[0, 0] = 1
+vv = getValue(bb)
+print(f'vv = {vv}')
+
+bb = np.zeros((3, 3))
+bb[0, 1] = -1
+bb[1, 1] = 1
+vv = getValue(bb)
+print(f'vv = {vv}')
+
+
+
+
+def getAction(pBoard, display=False, epsilon=0.0):
     matrix = np.zeros((3, 3))
+    matrix2 = np.zeros((3, 3, 2))
     maxY = -999999999
     maxI = -1
     for i in range(9):
@@ -84,6 +125,12 @@ def getAction(pBoard, display=False):
         board[divmod(i, 3)] = 1;
         x = getX(board)
         y = model(x)
+
+        m = Dirichlet(torch.tensor([0.03, 0.03]))
+        noise = m.sample()
+        y = (1 - epsilon) * y + epsilon * noise
+
+        matrix2[divmod(i, 3)] = y.detach().numpy()
         y = torch.softmax(y, dim = 0)[0]
         matrix[divmod(i, 3)] = y
         if y > maxY:
@@ -91,6 +138,7 @@ def getAction(pBoard, display=False):
             maxI = i
     if display == True:
         logging.info(f'matrix =\n{matrix}')
+        logging.info(f'matrix2 =\n{matrix2}')
     return maxI
 
 def getRandomAction(board):
@@ -101,12 +149,7 @@ def getRandomAction(board):
     return -1
 
 def getAction2(board):
-    r = np.random.random()
-    th = g_i / 1000000
-    if r >= th or r >= 0.999999:
-        return getRandomAction(board)
-    else:
-        return getAction(board)
+    return getAction(board, epsilon=0.25)
 
 def play(action1, action2):
     board = np.zeros((3, 3), dtype=np.int16)
@@ -164,26 +207,15 @@ def evaluate():
     board[0, 1] = -1
     getAction(board, display=True)
 
-
-
-
-X = None
-Y0 = None
-
 for i in range(100000000000000):
 
     g_i = i
 
-    if i % 100000 == 0:
+    if i > 0 and i % 25000 == 0:
         logging.info(f'i = {i}')
         evaluate()
 
-    score, boardArr = None, None 
-
-    if int(i) % 2 == 0:
-        score, boardArr = play(getAction2, getAction2)
-    else:
-        score, boardArr = play(getAction2, getAction2)
+    score, boardArr = play(getAction2, getAction2)
 
     # sample train data
     r = np.random.randint(0, len(boardArr))
@@ -201,12 +233,13 @@ for i in range(100000000000000):
     loss = loss_fn(y, y0)
     if i % 100001 == 0:
         logging.info((x, y, y0))
-
+    
     # Backpropagation
     loss.backward()
     optimizer.step()
     optimizer.zero_grad()
 
+    
 
 
 
