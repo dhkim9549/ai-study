@@ -74,13 +74,24 @@ def isOver(board):
         return True
     return False
 
-def getValue(pBoard):
+def getModelValue(pBoard):
+    x = getX(pBoard)
+    y = model(x)
+    y = torch.softmax(y, dim = 0)[0]
+    return y
+
+def getTSValue(pBoard, depth=0):
+    
     if hasWon(pBoard):
         return 1
     if hasWon(- pBoard):
         return 0
     if isOver(pBoard):
         return 0.5
+
+    if depth >= 0:
+        y = getModelValue(pBoard) 
+        return y
 
     maxY = -999999999
     maxI = -1
@@ -90,16 +101,15 @@ def getValue(pBoard):
         if board[divmod(i, 3)] != 0:
             continue
         board[divmod(i, 3)] = 1;
-        y = getValue(board)
-        y = 1 - y
+        y = getTSValue(board, depth = depth + 1)
         if y > maxY:
             maxY = y
 
-    return maxY
-        
+    return 1 - maxY
+
+"""
 bb = np.zeros((3, 3))
-bb[1, 1] = 1
-bb[0, 1] = -1
+bb[1, 1] = -1
 bb[0, 0] = 1
 vv = getValue(bb)
 print(f'vv = {vv}')
@@ -109,13 +119,11 @@ bb[0, 1] = -1
 bb[1, 1] = 1
 vv = getValue(bb)
 print(f'vv = {vv}')
+"""
 
+def getAction(pBoard, display=False, epsilon=0.0, isTreeSearch=False):
 
-
-
-def getAction(pBoard, display=False, epsilon=0.0):
     matrix = np.zeros((3, 3))
-    matrix2 = np.zeros((3, 3, 2))
     maxY = -999999999
     maxI = -1
     for i in range(9):
@@ -123,22 +131,27 @@ def getAction(pBoard, display=False, epsilon=0.0):
         if board[divmod(i, 3)] != 0:
             continue
         board[divmod(i, 3)] = 1;
-        x = getX(board)
-        y = model(x)
+        if isTreeSearch == True:
+            y = getTSValue(board)
+        else:
+            y = getModelValue(board)
 
-        m = Dirichlet(torch.tensor([0.03, 0.03]))
-        noise = m.sample()
-        y = (1 - epsilon) * y + epsilon * noise
-
-        matrix2[divmod(i, 3)] = y.detach().numpy()
-        y = torch.softmax(y, dim = 0)[0]
         matrix[divmod(i, 3)] = y
+
+    m = Dirichlet(torch.ones(3, 3) * 0.03)
+    noise = m.sample().detach().numpy()
+
+    yy = (1 - epsilon) * matrix + epsilon * noise
+
+    for i in range(9):
+        y = yy[divmod(i, 3)]
         if y > maxY:
             maxY = y
             maxI = i
+
     if display == True:
         logging.info(f'matrix =\n{matrix}')
-        logging.info(f'matrix2 =\n{matrix2}')
+
     return maxI
 
 def getRandomAction(board):
@@ -149,7 +162,10 @@ def getRandomAction(board):
     return -1
 
 def getAction2(board):
-    return getAction(board, epsilon=0.25)
+    return getAction(board, epsilon=0.25, isTreeSearch=True)
+
+def getAction3(board):
+    return getAction(board, epsilon=0.0, isTreeSearch=False)
 
 def play(action1, action2):
     board = np.zeros((3, 3), dtype=np.int16)
@@ -177,7 +193,7 @@ def evaluate():
         score = 0
         cnt += 1
         if int(i) % 2 == 0:
-            score, boardArr = play(getAction, getRandomAction)
+            score, boardArr = play(getAction3, getRandomAction)
             if score > 0:
                 win += 1
             elif score < 0:
@@ -185,7 +201,7 @@ def evaluate():
             else:
                 tie += 1
         else:
-            score, boardArr = play(getRandomAction, getAction)
+            score, boardArr = play(getRandomAction, getAction3)
             if score > 0:
                 lose += 1
             elif score < 0:
@@ -211,8 +227,9 @@ for i in range(100000000000000):
 
     g_i = i
 
-    if i > 0 and i % 25000 == 0:
+    if i > 0 and i % 1000 == 0:
         logging.info(f'i = {i}')
+    if i > 0 and i % 5000 == 0:
         evaluate()
 
     score, boardArr = play(getAction2, getAction2)
