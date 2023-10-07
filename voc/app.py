@@ -26,7 +26,7 @@ for x in f:
     voca[token] = i
     voca2[i] = token
     i += 1
-    if(i >= 10000):
+    if(i >= 40000):
         break
 
 # Cenverts str to numpy array
@@ -47,14 +47,14 @@ def strToVec(s):
 
     return x
 
-brcdLst = ['정책모기지부', '고객만족부', '지사', '유동화자산부', '주택보증부', '주택연금부', 'ICT운영부', '종합금융센터', '유동화증권부', '사업자보증부', '채권관리부', '인사부', '경영혁신부', '홍보실', '주택금융연구원']
+brcdLst = ['정책모기지부', '지사', '유동화자산부', '주택보증부', '주택연금부', 'ICT운영부', '종합금융센터', '유동화증권부', '사업자보증부', '채권관리부', '인사부', '경영혁신부', '홍보실', '주택금융연구원']
 
 # nn
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
         self.linear_relu_stack = nn.Sequential(
-            nn.LazyLinear(100),
+            nn.LazyLinear(200),
             nn.ReLU(),
             nn.Dropout(p=0.5),
             nn.LazyLinear(len(brcdLst)),
@@ -67,7 +67,7 @@ class NeuralNetwork(nn.Module):
 model = NeuralNetwork()
 print(f'model = {model}')
 
-model.load_state_dict(torch.load('voc-train-100.pt'))
+model.load_state_dict(torch.load('pt/train-voc-nc-v40000-h200.pt'))
 model.eval()
 
 loss_fn = nn.CrossEntropyLoss()

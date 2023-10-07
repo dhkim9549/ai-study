@@ -27,7 +27,7 @@ for x in f:
     brcd = tokens[8]
     cont = tokens[3] + ' ' + tokens[4]
 
-    if vocDy < '20200101' or vocDy >= '20221101':
+    if vocDy < '20200101' or vocDy >= '20230301':
         continue
 
     brcd = brcd.strip()
