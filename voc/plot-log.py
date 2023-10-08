@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-fileLst = ['logs/train-voc.log']
+fileLst = ['logs/train-voc-nc-v40000-h200.log']
 
 yLst = []
 xWin = []
@@ -10,10 +10,10 @@ for reviewFile in fileLst:
     f = open(reviewFile, "r")
     str = ''
     for line in f:
-        if 'crct' not in line:
+        if 'crctRat =' not in line:
             continue 
         tokenLst = line.split(' ')
-        x = float(tokenLst[2])
+        x = float(tokenLst[5])
         if x > 0.99 or x < 0.1:
             continue
         xWin.append(x)
