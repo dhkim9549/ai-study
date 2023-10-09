@@ -203,9 +203,6 @@ contLst = list(trainDict.keys())
 y0_cnt = np.zeros((1, len(brcdLst)), dtype=int)
 y_cnt = np.zeros((1, len(brcdLst)), dtype=int)
 
-batchSize = 1 
-Y, Y0 = None, None 
-
 try:
     for cnt in range(1000001):
 
@@ -228,19 +225,11 @@ try:
         
         # infer
         y = model(x)
-        if cnt % batchSize == 0:
-            Y = y
-        else:
-            Y = torch.vstack((Y, y))
         y_arg_max = torch.argmax(y)
         y_cnt[0, y_arg_max] += 1
         brcd_infer = brcdLst[y_arg_max]
 
         y0 = torch.Tensor(y0)
-        if cnt % batchSize == 0:
-            Y0 = y0
-        else:
-            Y0 = torch.vstack((Y0, y0))
 
         # stat
         totCnt += 1
@@ -272,15 +261,11 @@ try:
             torch.save(model.state_dict(), 'pt/' + nnName + '.pt')
 
         # backpropagation
-        if (cnt + 1) % batchSize == 0:
-            loss = loss_fn(Y, Y0)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
+        loss = loss_fn(y, y0)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
 except Exception:
     logging.exception('Exception in training loop')
-
-
 
