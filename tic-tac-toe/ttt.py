@@ -162,7 +162,7 @@ def getRandomAction(board):
     return -1
 
 def getAction2(board):
-    return getAction(board, epsilon=0.25, isTreeSearch=True)
+    return getAction(board, epsilon=0.25, isTreeSearch=False)
 
 def getAction3(board):
     return getAction(board, epsilon=0.0, isTreeSearch=False)
@@ -208,7 +208,7 @@ def evaluate():
                 win += 1
             else:
                 tie += 1
-    logging.info((win, tie, lose, cnt)) 
+    logging.info(f'evaluation = {(win, tie, lose, cnt)}') 
 
     board = np.zeros((3, 3), dtype=np.int16)
     getAction(board, display=True)
@@ -227,9 +227,9 @@ for i in range(100000000000000):
 
     g_i = i
 
-    if i > 0 and i % 1000 == 0:
+    if i % 1000 == 0:
         logging.info(f'i = {i}')
-    if i > 0 and i % 5000 == 0:
+    if i % 30000 == 0:
         evaluate()
         PATH = f'./models/model-TS-{i}.pth'
         torch.save(model.state_dict(), PATH)
