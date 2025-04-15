@@ -231,6 +231,8 @@ for i in range(100000000000000):
         logging.info(f'i = {i}')
     if i > 0 and i % 5000 == 0:
         evaluate()
+        PATH = f'./models/model-TS-{i}.pth'
+        torch.save(model.state_dict(), PATH)
 
     score, boardArr = play(getAction2, getAction2)
 
