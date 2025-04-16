@@ -188,6 +188,7 @@ def play(action1, action2):
     return (score, boardArr)
 
 def evaluate():
+    logging.info('evaluating...')
     win, tie, lose, cnt = 0, 0, 0, 0
     for i in range(10000):
         score = 0
@@ -227,11 +228,11 @@ for i in range(100000000000000):
 
     g_i = i
 
-    if i % 1000 == 0:
+    if i % 100 == 0:
         logging.info(f'i = {i}')
     if i % 30000 == 0:
         evaluate()
-        PATH = f'./models/model-TS-{i}.pth'
+        PATH = f'./models/model-{i}.pth'
         torch.save(model.state_dict(), PATH)
 
     score, boardArr = play(getAction2, getAction2)
@@ -242,15 +243,15 @@ for i in range(100000000000000):
     x = getX(boardArr[r])
     y0 = score * (1 if int(r) % 2 == 0 else -1)
     if (y0 - 1) ** 2 < 0.001:
-        y0 = torch.tensor([1, 0], dtype=torch.float32)
+        y0 = torch.tensor([1, -1], dtype=torch.float32)
     elif (y0 + 1) ** 2 < 0.001:
-        y0 = torch.tensor([0, 1], dtype=torch.float32)
+        y0 = torch.tensor([-1, 1], dtype=torch.float32)
     else:
-        y0 = torch.tensor([0.5, 0.5], dtype=torch.float32) 
+        y0 = torch.tensor([0, 0], dtype=torch.float32) 
 
     y = model(x)
     loss = loss_fn(y, y0)
-    if i % 100001 == 0:
+    if i % 30000 == 0:
         logging.info((x, y, y0))
     
     # Backpropagation
