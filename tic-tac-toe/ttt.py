@@ -7,7 +7,7 @@ import datetime
 
 nnName = 'ttt-lr0002-ex015-ep020'
 
-logging.basicConfig(filename='logs/' + nnName + '.log',
+logging.basicConfig(filename='logs/train-' + nnName + '.log',
                     filemode='w',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%Y/%m/%d %H:%M:%S',
