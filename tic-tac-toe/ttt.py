@@ -5,7 +5,7 @@ from torch.distributions.dirichlet import Dirichlet
 import logging
 import datetime
 
-nnName = 'ttt-lr0002-ex015-ep020'
+nnName = 'ttt-lr0002-ex015-ep050'
 
 logging.basicConfig(filename='logs/train-' + nnName + '.log',
                     filemode='w',
@@ -166,7 +166,7 @@ def getRandomAction(board):
     return -1
 
 def getAction2(board):
-    return getAction(board, epsilon=0.20, isTreeSearch=False)
+    return getAction(board, epsilon=0.50, isTreeSearch=False)
 
 def getAction3(board):
     return getAction(board, epsilon=0.0, isTreeSearch=False)
