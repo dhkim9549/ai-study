@@ -5,7 +5,7 @@ from torch.distributions.dirichlet import Dirichlet
 import logging
 import datetime
 
-nnName = 'train-tic'
+nnName = 'ttt-lr0002-ex015-ep020'
 
 logging.basicConfig(filename='logs/' + nnName + '.log',
                     filemode='w',
@@ -141,6 +141,10 @@ def getAction(pBoard, display=False, epsilon=0.0, isTreeSearch=False):
     m = Dirichlet(torch.ones(3, 3) * 0.03)
     noise = m.sample().detach().numpy()
 
+    rn = np.random.rand(1, 1)[0]
+    if rn > 0.15:
+        epsilon = 0.0
+
     yy = (1 - epsilon) * matrix + epsilon * noise
 
     for i in range(9):
@@ -162,7 +166,7 @@ def getRandomAction(board):
     return -1
 
 def getAction2(board):
-    return getAction(board, epsilon=0.25, isTreeSearch=False)
+    return getAction(board, epsilon=0.20, isTreeSearch=False)
 
 def getAction3(board):
     return getAction(board, epsilon=0.0, isTreeSearch=False)
@@ -228,11 +232,11 @@ for i in range(100000000000000):
 
     g_i = i
 
-    if i % 100 == 0:
+    if i % 1000 == 0:
         logging.info(f'i = {i}')
-    if i % 30000 == 0:
+    if i % 10000 == 0:
         evaluate()
-        PATH = f'./models/model-{i}.pth'
+        PATH = f'./models/{nnName}-{i}.pth'
         torch.save(model.state_dict(), PATH)
 
     score, boardArr = play(getAction2, getAction2)
@@ -243,15 +247,15 @@ for i in range(100000000000000):
     x = getX(boardArr[r])
     y0 = score * (1 if int(r) % 2 == 0 else -1)
     if (y0 - 1) ** 2 < 0.001:
-        y0 = torch.tensor([1, -1], dtype=torch.float32)
+        y0 = torch.tensor([1, 0], dtype=torch.float32)
     elif (y0 + 1) ** 2 < 0.001:
-        y0 = torch.tensor([-1, 1], dtype=torch.float32)
+        y0 = torch.tensor([0, 1], dtype=torch.float32)
     else:
-        y0 = torch.tensor([0, 0], dtype=torch.float32) 
+        y0 = torch.tensor([0.5, 0.5], dtype=torch.float32) 
 
     y = model(x)
     loss = loss_fn(y, y0)
-    if i % 30000 == 0:
+    if i % 1000 == 0:
         logging.info((x, y, y0))
     
     # Backpropagation
