@@ -38,7 +38,7 @@ class NeuralNetwork(nn.Module):
 model = NeuralNetwork()
 logging.info(model)
 
-file_path = './models/model-TS-2905000.pth'
+file_path = './models/ttt-lr0002-ex015-ep099-6970000.pth'
 model.load_state_dict(torch.load(file_path))
 model.eval()
 
@@ -46,10 +46,13 @@ sBoard = torch.zeros(3, 3)
 for i in range(3):
     for j in range(3):
         board = np.zeros((3, 3), dtype=np.int16)
-        board[0][0] = -1
-        board[0][1] = -1
-        board[1][1] = 1
-        board[1][0] = 1
+        board[1][1] = -1
+        board[0][0] = 1
+        board[1][0] = -1
+
+
+
+
         if board[i][j] != 0:
             continue
         board[i][j] = 1
