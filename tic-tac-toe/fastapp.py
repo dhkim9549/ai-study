@@ -5,6 +5,7 @@ uv run fastapi dev fastapp.py --host 0.0.0.0 --port 8000
 from typing import Union
 from fastapi import FastAPI
 import json
+from fastapi.middleware.cors import CORSMiddleware
 
 import numpy as np
 import torch
@@ -84,6 +85,14 @@ def infer(q):
 
 app = FastAPI()
 
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
@@ -102,6 +111,49 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
     return y;
 
+
+@app.get("/greeting")
+def read_greeting(board: Union[str, None] = None):
+
+    print('read_greeting() start...')
+
+    print(f'board = {board}')
+    board = json.loads(board)
+    print(f'board = {board}')
+
+    b = board['board']
+    print(f'b = {b}')
+
+    cp = board['currentPlayer']
+    print(f'cp = {cp}')
+
+    q = []
+    for i, v in enumerate(b):
+        print(i, v)
+        if v == '':
+            q.append('e')
+        elif v == cp:
+            q.append('o')
+        else:
+            q.append('x')
+    print(f'q = {q}')
+
+    sBoard = infer(q)
+
+    maxY = -999999999
+    maxI = -1
+    for i in range(9):
+        y = sBoard[divmod(i, 3)]
+        if y > maxY:
+            maxY = y
+            maxI = i
+
+    y = {}
+    y['a'] = maxI
+    y = json.dumps(y)
+    print(f'y = {y}')
+
+    return y;
 
 
 
