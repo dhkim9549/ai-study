@@ -1,5 +1,6 @@
 """
 uv run fastapi dev fastapp.py --host 0.0.0.0 --port 8000
+uv run fastapi run fastapp.py --port 8000
 """
 
 from typing import Union
@@ -16,7 +17,7 @@ import datetime
 nnName = 'fastapp-ttt'
 
 logging.basicConfig(filename='logs/' + nnName + '.log',
-                    filemode='w',
+                    filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%Y/%m/%d %H:%M:%S',
                     level=logging.DEBUG)
@@ -52,7 +53,7 @@ model.load_state_dict(torch.load(file_path))
 model.eval()
 
 def infer(q):
-    print(f'infor q = {q}')
+    logging.info(f'infor q = {q}')
     board = np.zeros((3, 3), dtype=np.int16)
     for i in range(3):
         for j in range(3):
@@ -69,15 +70,15 @@ def infer(q):
                 continue
             board[i][j] = 1
             x = getX(board)
-            print(f'x = {x}')
+            logging.info(f'x = {x}')
             y = model(x)
-            print(f'y = {y}')
+            logging.info(f'y = {y}')
             y = torch.softmax(y, dim = 0)[0]
-            print(f'y = {y}')
+            logging.info(f'y = {y}')
             sBoard[i][j] = y
             board[i][j] = 0
     
-    print(f'sBoard = {sBoard}')
+    logging.info(f'sBoard = {sBoard}')
     
     return sBoard;
 
@@ -102,12 +103,12 @@ def read_root():
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
 
-    print(f'q = {q}')
+    logging.info(f'q = {q}')
 
     y = infer(q)
     y = y.detach().numpy().tolist()
     y = json.dumps(y)
-    print(f'y = {y}')
+    logging.info(f'y = {y}')
 
     return y;
 
@@ -115,28 +116,27 @@ def read_item(item_id: int, q: Union[str, None] = None):
 @app.get("/greeting")
 def read_greeting(board: Union[str, None] = None):
 
-    print('read_greeting() start...')
+    logging.info('read_greeting() start...')
 
-    print(f'board = {board}')
+    logging.info(f'board = {board}')
     board = json.loads(board)
-    print(f'board = {board}')
+    logging.info(f'board = {board}')
 
     b = board['board']
-    print(f'b = {b}')
+    logging.info(f'b = {b}')
 
     cp = board['currentPlayer']
-    print(f'cp = {cp}')
+    logging.info(f'cp = {cp}')
 
     q = []
     for i, v in enumerate(b):
-        print(i, v)
         if v == '':
             q.append('e')
         elif v == cp:
             q.append('o')
         else:
             q.append('x')
-    print(f'q = {q}')
+    logging.info(f'q = {q}')
 
     sBoard = infer(q)
 
@@ -151,7 +151,7 @@ def read_greeting(board: Union[str, None] = None):
     y = {}
     y['a'] = maxI
     y = json.dumps(y)
-    print(f'y = {y}')
+    logging.info(f'y = {y}')
 
     return y;
 
